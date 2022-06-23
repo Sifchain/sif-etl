@@ -6,7 +6,7 @@ Deploy your own ETL server that extracts, transforms and loads sifchain data for
 
 This repository is shaped as follows:
 
-- `./src/manager.py` is the commands manager, any command described in this file can be called using `python3 ./src/manager.py <COMMAND>` (replace `<COMMAND>` by the command name to run).
+- `manager.py` is the commands manager, any command described in this file can be called using `python3 manager.py <COMMAND>` (replace `<COMMAND>` by the command name to run).
 - `./src/commands` contains all the commands used by the manager
 - `./src/events` contains all the event processors used by the event listener
 - `./src/mutations` contains all mutations functions that update the database
