@@ -1,4 +1,4 @@
-from queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+from src.queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
 
 
 def get_token_decimal_dictionary_query():

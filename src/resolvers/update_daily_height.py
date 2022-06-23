@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
 import logging
-from utils import setup_logger_util
-from mutations import create_daily_height_mutation
+from datetime import datetime, timezone
+
+from src.mutations.create_daily_height import create_daily_height_mutation
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("update_daily_height_resolver", formatter)

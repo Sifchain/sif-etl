@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_denomination_trace_mutation(hash, event_type,
@@ -10,7 +10,7 @@ def create_event_denomination_trace_mutation(hash, event_type,
                                              packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence):
 
     sql_str = '''
-    INSERT INTO {19}
+    INSERT INTO events_audit
     (hash, type, log, height, time,
     dt_sender, dt_receiver, dt_denom, dt_amount, dt_success, 
     dt_packet_src_port, dt_packet_src_channel, dt_packet_dst_port, dt_packet_dst_channel, dt_packet_channel_ordering,
@@ -23,7 +23,6 @@ def create_event_denomination_trace_mutation(hash, event_type,
     '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                sender, receiver, denom, amount, success,
                packet_src_port, packet_src_channel, packet_dst_port, packet_dst_channel, packet_channel_ordering,
-               packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence,
-               config_service.schema_config['EVENTS_TABLE_V2'])
+               packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence)
 
     database_service.execute_update(sql_str)

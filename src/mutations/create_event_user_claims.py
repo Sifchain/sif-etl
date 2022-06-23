@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_user_claims_mutation(height, hash, event_type, timestamp,  address, claim_type, claim_time, events, raw_claim_time):

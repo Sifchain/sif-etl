@@ -1,6 +1,4 @@
-import json
-from services.config import config_service
-from services import database_service
+from src.services.database import database_service
 
 
 def create_event_post_distribution_mutation(height, timestamp, distribution_rec, distribution_name):

@@ -1,4 +1,4 @@
-from services import database_service
+from src.services.database import database_service
 
 
 def reset_liquidity_provider_pmtp_db_mutation():

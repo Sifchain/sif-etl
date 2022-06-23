@@ -1,8 +1,10 @@
-from psycopg2 import InterfaceError
 import logging
 from time import sleep
-from services import database_service
-from utils import setup_logger_util
+
+from psycopg2 import InterfaceError
+
+from src.services.database import database_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("create_daily_height_mutation", formatter)

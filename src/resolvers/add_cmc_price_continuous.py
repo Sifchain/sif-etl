@@ -1,8 +1,9 @@
-from time import sleep
 import logging
-from resolvers.refresh_token_registry import refresh_token_registry_resolver
-from utils import setup_logger_util
-from services import coinmarketcap_service
+from time import sleep
+
+from src.resolvers.refresh_token_registry import refresh_token_registry_resolver
+from src.services.coinmarketcap import coinmarketcap_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("add_cmc_price_continuous", formatter)
@@ -10,7 +11,7 @@ logger = setup_logger_util("add_cmc_price_continuous", formatter)
 
 def add_cmc_price_continuous_resolver():
     cnt = 0
-    while (True):
+    while True:
         cnt += 1
         try:
             if cnt == 10:

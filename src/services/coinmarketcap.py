@@ -1,10 +1,12 @@
-from datetime import datetime
-from services.sifapi.get_pools import get_pools_sifapi
-from services.config import config_service
 import json
+from datetime import datetime
+
 import requests
-from mutations import create_cmc_price_record_batch_mutation
-from utils import setup_logger_util
+
+from src.mutations.create_cmc_price_record_batch import create_cmc_price_record_batch_mutation
+from src.services.config import config_service
+from src.services.sifapi.get_pools import get_pools_sifapi
+from src.utils.setup_logger import setup_logger_util
 
 
 class CoinMarketCapService:

@@ -1,6 +1,7 @@
 import requests
-from services.config import config_service
-from queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+
+from src.queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+from src.services.config import config_service
 
 LCD_SERVER_URL = config_service.api_config["LCD_SERVER_URL"]
 

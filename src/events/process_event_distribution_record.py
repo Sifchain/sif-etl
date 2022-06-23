@@ -1,6 +1,6 @@
-from mutations.create_event_post_distribution import create_event_post_distribution_mutation
-from events.process_event_distribution_started import process_event_distribution_started_event
-from utils import clean_parse_amount_util
+from src.events.process_event_distribution_started import process_event_distribution_started_event
+from src.mutations.create_event_post_distribution import create_event_post_distribution_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
 
 
 def process_event_distribution_record_event(hash, event_type, events, height, timestamp, token_decimal_dict, tx):

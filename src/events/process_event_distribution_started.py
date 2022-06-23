@@ -1,5 +1,6 @@
-from mutations.create_event_distribution_started import create_event_distribution_started_mutation
-from utils import clean_parse_amount_util, clean_parse_token_util
+from src.mutations.create_event_distribution_started import create_event_distribution_started_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
+from src.utils.clean_parse_token import clean_parse_token_util
 
 
 def process_event_distribution_started_event(hash, event_type, events, height, timestamp, token_decimal_dict, tx):

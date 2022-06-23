@@ -1,10 +1,10 @@
 import requests
 import os
 import logging
-from services.config import config_service
-from services.sifapi.get_timestamp_from_height_pmtp import get_timestamp_from_height_pmtp_sifapi
-from queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
-from utils import setup_logger_util
+
+from src.queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+from src.services.sifapi.get_timestamp_from_height_pmtp import get_timestamp_from_height_pmtp_sifapi
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_price_records_pmtp_sifapi", formatter)
@@ -62,4 +62,4 @@ def get_price_records_pmtp_sifapi():
         except Exception as e:
             logger.info(f"couldn't resolve {e}")
 
-    return (token_prices_dict, rowan_cusdt, height, timestamp)
+    return token_prices_dict, rowan_cusdt, height, timestamp

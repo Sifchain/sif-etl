@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_proposal_deposit_mutation(hash, event_type,
@@ -8,7 +8,7 @@ def create_event_proposal_deposit_mutation(hash, event_type,
                                            sender, recipient, proposal_type, voting_period_start, token, amount, gasWanted, gasUsed):
 
     sql_str = '''
-    INSERT INTO {13}
+    INSERT INTO events_audit
     (hash, type, log, height, time,
     pd_sender, pd_recipient, pd_proposal_type,
     pd_voting_period_start, pd_token, pd_amount,
@@ -20,7 +20,6 @@ def create_event_proposal_deposit_mutation(hash, event_type,
     )
     '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                sender, recipient, proposal_type, voting_period_start,
-               token, amount, gasWanted, gasUsed,
-               config_service.schema_config['EVENTS_TABLE_V2'])
+               token, amount, gasWanted, gasUsed)
 
     database_service.execute_update(sql_str)

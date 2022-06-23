@@ -1,4 +1,4 @@
-from mutations.create_event_update_client import create_event_update_client_mutation
+from src.mutations.create_event_update_client import create_event_update_client_mutation
 
 
 def process_event_update_client_event(hash, event_type, events, height, timestamp):

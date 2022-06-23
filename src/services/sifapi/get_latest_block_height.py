@@ -1,5 +1,6 @@
 import requests
-from services.config import config_service
+
+from src.services.config import config_service
 
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
 

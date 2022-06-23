@@ -1,4 +1,4 @@
-from services.database import database_service
+from src.services.database import database_service
 
 
 def get_token_decimal_dictionary_db_query():

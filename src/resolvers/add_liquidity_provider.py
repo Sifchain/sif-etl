@@ -1,9 +1,13 @@
-import requests
-import time
 import logging
-from services import config_service
-from utils import setup_logger_util
-from mutations import reset_liquidity_provider_db_mutation, add_liquidity_provider_db_mutation, update_liquidity_provider_db_mutation
+import time
+
+import requests
+
+from src.mutations.add_liquidity_provider_db import add_liquidity_provider_db_mutation
+from src.mutations.reset_liquidity_provider_db import reset_liquidity_provider_db_mutation
+from src.mutations.update_liquidity_provider_db import update_liquidity_provider_db_mutation
+from src.services.config import config_service
+from src.utils.setup_logger import setup_logger_util
 
 LCD_SERVER_URL = config_service.api_config["LCD_SERVER_URL"]
 

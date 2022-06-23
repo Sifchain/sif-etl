@@ -1,5 +1,6 @@
-from utils import clean_parse_amount_util, clean_parse_token_util
-from mutations.create_event_add_burn import create_event_add_burn_mutation
+from src.mutations.create_event_add_burn import create_event_add_burn_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
+from src.utils.clean_parse_token import clean_parse_token_util
 
 
 def process_event_record_burn_event(hash, event_type, events, height, timestamp, token_decimal_dict):

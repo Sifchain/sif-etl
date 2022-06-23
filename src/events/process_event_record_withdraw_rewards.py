@@ -1,6 +1,7 @@
 import re
-from utils import clean_parse_amount_util
-from mutations.create_event_withdraw_rewards import create_event_withdraw_rewards_mutation
+
+from src.mutations.create_event_withdraw_rewards import create_event_withdraw_rewards_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
 
 
 def process_event_record_withdraw_rewards_event(hash, event_type, events, height, timestamp, token_decimal_dict):

@@ -1,6 +1,7 @@
 import logging
-from services import database_service
-from utils import setup_logger_util
+
+from src.services.database import database_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util(

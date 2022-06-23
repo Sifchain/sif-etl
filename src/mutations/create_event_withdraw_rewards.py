@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_withdraw_rewards_mutation(hash, event_type,
@@ -9,7 +9,7 @@ def create_event_withdraw_rewards_mutation(hash, event_type,
 
     if amount is None:
         sql_str = """
-        INSERT INTO {7}
+        INSERT INTO events_audit
         (hash, type, log, height, time, 
         wr_recipient_addr,
         wr_sender_addr)
@@ -18,11 +18,10 @@ def create_event_withdraw_rewards_mutation(hash, event_type,
         '{6}')
         """.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                    recipient_addr,
-                   sender_addr,
-                   config_service.schema_config['EVENTS_TABLE_V2'])
+                   sender_addr)
     else:
         sql_str = '''
-            INSERT INTO {9}
+            INSERT INTO events_audit
             (hash, type, log, height, time, 
             wr_recipient_addr,
             wr_sender_addr, wr_amount, wr_token)
@@ -30,7 +29,6 @@ def create_event_withdraw_rewards_mutation(hash, event_type,
             '{5}', 
             '{6}', '{7}', '{8}')
             '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
-                       recipient_addr, sender_addr, amount, token,
-                       config_service.schema_config['EVENTS_TABLE_V2'])
+                       recipient_addr, sender_addr, amount, token)
 
     database_service.execute_update(sql_str)

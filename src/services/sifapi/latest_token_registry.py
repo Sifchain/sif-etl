@@ -1,5 +1,6 @@
 import requests
-from services.config import config_service
+
+from src.services.config import config_service
 
 
 def latest_token_registry_sifapi():

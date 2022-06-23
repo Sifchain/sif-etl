@@ -1,6 +1,9 @@
 import logging
-from utils import clean_parse_amount_util, clean_parse_token_util, setup_logger_util
-from mutations.create_event_swap import create_event_swap_mutation
+
+from src.mutations.create_event_swap import create_event_swap_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
+from src.utils.clean_parse_token import clean_parse_token_util
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util(

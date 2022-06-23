@@ -1,7 +1,7 @@
 import logging
-from services.config import config_service
-from services import database_service
-from utils import setup_logger_util
+
+from src.services.database import database_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("create_cmc_price_record_batch_mutation", formatter)
@@ -14,7 +14,7 @@ def create_cmc_price_record_batch_mutation(current_time, cmc):
         where is_latest = true
         """
 
-    database_service.execute_query(sql_str)
+    database_service.execute_update(sql_str)
 
     for symbol in cmc["data"]:
         try:
@@ -44,7 +44,7 @@ def create_cmc_price_record_batch_mutation(current_time, cmc):
 
         if is_active:
             sql_str = '''
-                INSERT INTO {15}
+                INSERT INTO tokenprices_coinmarketcap
                 (timestamp, token, circulating_supply, total_supply,
                     last_updated, cmc_rank, last_price, volume_24h, percent_change_1h, percent_change_24h,
                     percent_change_7d, percent_change_30d, percent_change_60d, percent_change_90d,
@@ -58,25 +58,25 @@ def create_cmc_price_record_batch_mutation(current_time, cmc):
                            last_updated, cmc_rank, last_price, volume_24h, percent_change_1h,
                            percent_change_24h, percent_change_7d, percent_change_30d, percent_change_60d,
                            percent_change_90d,
-                           market_cap, config_service.schema_config['COINMARKETCAP_TABLE'])
+                           market_cap)
             logger.info(sql_str)
 
         else:
             sql_str = '''
-                INSERT INTO {3}
+                INSERT INTO tokenprices_coinmarketcap
                 (timestamp, token, 
                     last_updated
                     )
                 VALUES ('{0}', '{1}',  
                 '{2}')
-                '''.format(current_time, symbol, last_updated, config_service.schema_config['COINMARKETCAP_TABLE'])
+                '''.format(current_time, symbol, last_updated)
             logger.info(sql_str)
 
-        database_service.execute_query(sql_str)
+        database_service.execute_update(sql_str)
 
     sql_str = """
         delete from tokenprices_coinmarketcap
         where is_latest = false
         """
 
-    database_service.execute_query(sql_str)
+    database_service.execute_update(sql_str)

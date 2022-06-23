@@ -1,8 +1,8 @@
-import logging
 import json
-from utils import decode_hash_util, create_hash_util, clean_parse_token_util, clean_parse_amount_util, setup_logger_util
-from mutations import create_txn_log_mutation, rollback_partial_txn_mutation
-from queries import get_token_decimal_dictionary_db_query
+import logging
+
+from src.queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("process_event_txn_resolver", formatter)

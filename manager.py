@@ -1,8 +1,16 @@
-from cmath import log
 import sys
-from commands import latest_run_command, event_record_continuous_command
-from resolvers import refresh_token_registry_resolver, add_price_record_resolver, add_price_record_pmtp_resolver, add_price_record_continuous_resolver, add_spiked_cache_resolver, update_once_day_resolver, add_pool_record_continuous_resolver, add_cmc_price_continuous_resolver
-from mutations import add_event_record_mutation
+
+from src.commands.event_record_continuous import event_record_continuous_command
+from src.commands.latest_run import latest_run_command
+from src.mutations.add_event_record import add_event_record_mutation
+from src.resolvers.add_cmc_price_continuous import add_cmc_price_continuous_resolver
+from src.resolvers.add_pool_record_continuous import add_pool_record_continuous_resolver
+from src.resolvers.add_price_record import add_price_record_resolver
+from src.resolvers.add_price_record_continuous import add_price_record_continuous_resolver
+from src.resolvers.add_price_record_pmtp import add_price_record_pmtp_resolver
+from src.resolvers.add_spiked_cache import add_spiked_cache_resolver
+from src.resolvers.refresh_token_registry import refresh_token_registry_resolver
+from src.resolvers.update_once_day import update_once_day_resolver
 
 if __name__ == '__main__':
     #### NO COMMAND USED ####

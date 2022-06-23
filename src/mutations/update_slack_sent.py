@@ -1,4 +1,4 @@
-from services import database_service
+from src.services.database import database_service
 
 
 def update_slack_sent_mutation(message_type, recipient, message=None):

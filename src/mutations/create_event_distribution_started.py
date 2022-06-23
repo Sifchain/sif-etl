@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_distribution_started_mutation(hash, event_type,
@@ -8,7 +8,7 @@ def create_event_distribution_started_mutation(hash, event_type,
                                                sender, recipient, action, token, amount, gasWanted, gasUsed):
 
     sql_str = '''
-    INSERT INTO {12}
+    INSERT INTO events_audit
     (hash, type, log, height, time,
     ds_sender, ds_recipient, ds_action,
     ds_token, ds_amount,
@@ -21,7 +21,6 @@ def create_event_distribution_started_mutation(hash, event_type,
     '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                sender, recipient, action,
                token, amount,
-               gasWanted, gasUsed,
-               config_service.schema_config['EVENTS_TABLE_V2'])
+               gasWanted, gasUsed)
 
     database_service.execute_update(sql_str)

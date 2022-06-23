@@ -1,9 +1,10 @@
 import requests
 import logging
-from services.config import config_service
-from services.sifapi.get_timestamp_from_height import get_timestamp_from_height_sifapi
-from queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
-from utils.setup_logger import setup_logger_util
+
+from src.queries.get_token_decimal_dictionary_db import get_token_decimal_dictionary_db_query
+from src.services.config import config_service
+from src.services.sifapi.get_timestamp_from_height import get_timestamp_from_height_sifapi
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_price_records_pmtp_sifapi", formatter)

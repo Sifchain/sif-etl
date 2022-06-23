@@ -1,7 +1,10 @@
-import re
 import logging
-from utils import clean_parse_amount_util, clean_parse_token_util, setup_logger_util
-from mutations.create_event_remove_liquidity import create_event_remove_liquidity_mutation
+import re
+
+from src.mutations.create_event_remove_liquidity import create_event_remove_liquidity_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
+from src.utils.clean_parse_token import clean_parse_token_util
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util(
@@ -9,7 +12,6 @@ logger = setup_logger_util(
 
 
 def process_event_remove_liquidity_event(hash, event_type, events, height, timestamp, token_decimal_dict):
-
     rl_provider = None
     raw_amount = []
 
@@ -35,7 +37,7 @@ def process_event_remove_liquidity_event(hash, event_type, events, height, times
         if obj['key'] == 'amount':
             raw_amount = obj['value'].split(',')
 
-    if raw_amount == None or rl_provider == None:
+    if raw_amount is None or rl_provider is None:
         logger.debug(f"events: {events}")
         raise Exception
 
@@ -43,16 +45,16 @@ def process_event_remove_liquidity_event(hash, event_type, events, height, times
         rl_token = clean_parse_token_util(raw_amount[0])
         rl_token_decimals = token_decimal_dict[rl_token]
         rl_amount = clean_parse_amount_util(
-            raw_amount[0])/10**rl_token_decimals
+            raw_amount[0]) / 10 ** rl_token_decimals
         rl_token2 = clean_parse_token_util(raw_amount[1])
         rl_token_decimals2 = token_decimal_dict[rl_token2]
         rl_amount2 = clean_parse_amount_util(
-            raw_amount[1])/10**rl_token_decimals2
+            raw_amount[1]) / 10 ** rl_token_decimals2
     else:
         rl_token = clean_parse_token_util(raw_amount[0])
         rl_token_decimals = token_decimal_dict[rl_token]
         rl_amount = clean_parse_amount_util(
-            raw_amount[0])/10**rl_token_decimals
+            raw_amount[0]) / 10 ** rl_token_decimals
         rl_token2 = ''
         rl_amount2 = None
 

@@ -1,6 +1,6 @@
 import json
-from services.config import config_service
-from services import database_service
+
+from src.services.database import database_service
 
 
 def create_event_edit_validator_mutation(hash, event_type,
@@ -8,7 +8,7 @@ def create_event_edit_validator_mutation(hash, event_type,
                                          sender, min_self_delegation, commission_rate, max_commission_change_rate, max_commission_rate, gasWanted, gasUsed):
 
     sql_str = '''
-        INSERT INTO {12}
+        INSERT INTO events_audit
         (hash, type, log, height, time, 
         ev_sender,
         ev_min_self_delegation, ev_commission_rate, ev_max_commission_change_rate,
@@ -19,7 +19,6 @@ def create_event_edit_validator_mutation(hash, event_type,
         '{8}', '{9}' ,'{10}', '{11}')
         '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                    sender, min_self_delegation, commission_rate, max_commission_change_rate,
-                   max_commission_rate, gasWanted, gasUsed,
-                   config_service.schema_config['EVENTS_TABLE_V2'])
+                   max_commission_rate, gasWanted, gasUsed)
 
     database_service.execute_update(sql_str)

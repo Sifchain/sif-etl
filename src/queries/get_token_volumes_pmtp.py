@@ -1,13 +1,13 @@
-from services import database_service
+from src.services.database import database_service
 
 
 def get_token_volumes_pmtp_query():
     swap_query = """
         select ea.height, 
-      	tb.base_denom as swap_token_in,
-      	tf.base_denom as swap_token_out,
-      	ea.swap_begin_amount as swap_token_in_amount,
-      	ea.swap_final_amount as swap_token_out_amount,
+        tb.base_denom as swap_token_in,
+        tf.base_denom as swap_token_out,
+        ea.swap_begin_amount as swap_token_in_amount,
+        ea.swap_final_amount as swap_token_out_amount,
         ea.swap_liquidity_fee
         from events_audit ea inner join token_registry tb on ea.swap_begin_token = lower(tb.denom)
         inner join token_registry tf on ea.swap_final_token = lower(tf.denom)
