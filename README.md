@@ -47,7 +47,7 @@ cp -a .env-example .env
 You can now run an ETL command using the command manager with the following command line:
 
 ```bash
-python3 ./src/manager.py <COMMAND>
+python3 manager.py <COMMAND>
 ```
 
 The list of command are provided in the next section.

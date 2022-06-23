@@ -6,7 +6,7 @@ import requests
 from src.events.process_event_user_claim import process_event_user_claim_event
 from src.queries.get_token_decimal_dictionary import get_token_decimal_dictionary_query
 from src.services.config import config_service
-from src.services.sifapi.get_timestamp_from_height import get_timestamp_from_height_sifapi
+from src.services.sifapi import *
 from src.utils.create_hash import create_hash_util
 from src.utils.setup_logger import setup_logger_util
 

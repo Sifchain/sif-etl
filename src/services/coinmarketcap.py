@@ -1,11 +1,8 @@
 import json
 from datetime import datetime
 
-import requests
-
 from src.mutations.create_cmc_price_record_batch import create_cmc_price_record_batch_mutation
-from src.services.config import config_service
-from src.services.sifapi.get_pools import get_pools_sifapi
+from src.services.sifapi import *
 from src.utils.setup_logger import setup_logger_util
 
 

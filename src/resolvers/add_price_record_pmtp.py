@@ -3,7 +3,7 @@ from datetime import timezone, datetime
 
 from src.mutations.create_price_record_pmtp import create_price_record_pmtp_mutation
 from src.queries.get_token_volumes_pmtp import get_token_volumes_pmtp_query
-from src.services.sifapi.get_price_records_pmtp import get_price_records_pmtp_sifapi
+from src.services.sifapi import *
 from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")

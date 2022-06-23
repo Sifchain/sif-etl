@@ -4,7 +4,7 @@ from bisect import bisect_left
 from src.mutations.add_event_record import add_event_record_mutation
 from src.queries.get_latest_processed_height import get_latest_processed_height_query
 from src.queries.get_unprocessed_heights import get_unprocessed_heights_query
-from src.services.sifapi.get_latest_block_height import get_latest_block_height_sifapi
+from src.services.sifapi import *
 from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
