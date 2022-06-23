@@ -1,7 +1,4 @@
 import json
-import logging
-
-import requests
 
 from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
 from src.events.process_event_add_liquidity import process_event_add_liquidity_event

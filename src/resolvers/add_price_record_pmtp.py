@@ -1,4 +1,3 @@
-import logging
 from datetime import timezone, datetime
 
 from src.mutations.create_price_record_pmtp import create_price_record_pmtp_mutation

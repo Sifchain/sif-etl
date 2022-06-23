@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, timezone
 
 from src.mutations.create_price_record import create_price_record_mutation

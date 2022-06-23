@@ -1,4 +1,3 @@
-import logging
 from bisect import bisect_left
 
 from src.mutations.add_event_record import add_event_record_mutation

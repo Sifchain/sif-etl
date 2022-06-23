@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime, timezone
 
 from src.mutations.update_token_registry_db import update_token_registry_db_mutation
