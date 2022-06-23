@@ -1,6 +1,6 @@
 import ciso8601
 
-from src.mutations.create_event_user_claims import create_event_user_claims_mutation
+from src.mutations.create_events import create_event_user_claims_mutation
 
 
 def process_event_user_claim_event(hash, event_type, events, height, timestamp):

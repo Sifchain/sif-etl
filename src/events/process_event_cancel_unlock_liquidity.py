@@ -1,6 +1,6 @@
 import logging
 
-from src.mutations.events import create_event_unlock_liquidity_mutation
+from src.mutations.create_events import create_event_unlock_liquidity_mutation
 from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")

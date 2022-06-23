@@ -1,5 +1,4 @@
-
-from src.mutations.create_event_create_claim import create_event_create_claim_mutation
+from src.mutations.create_events import create_event_create_claim_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 from src.utils.clean_parse_token import clean_parse_token_util
 

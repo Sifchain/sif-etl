@@ -1,4 +1,4 @@
-from src.mutations.create_event_unbond import create_event_unbond_mutation
+from src.mutations.create_events import create_event_unbond_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 from src.utils.clean_parse_token import clean_parse_token_util
 

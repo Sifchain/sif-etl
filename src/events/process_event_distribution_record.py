@@ -1,5 +1,5 @@
 from src.events.process_event_distribution_started import process_event_distribution_started_event
-from src.mutations.create_event_post_distribution import create_event_post_distribution_mutation
+from src.mutations.create_events import create_event_post_distribution_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 
 

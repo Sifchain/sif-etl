@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from src.mutations.add_liquidity_provider_db import add_liquidity_provider_db_mutation
+from src.mutations.add_liquidity_provider import add_liquidity_provider_db_mutation
 from src.mutations.reset_liquidity_provider_db import reset_liquidity_provider_db_mutation
 from src.mutations.update_liquidity_provider_db import update_liquidity_provider_db_mutation
 from src.services.config import config_service

@@ -1,4 +1,4 @@
-from src.mutations.create_event_proposal_vote import create_event_proposal_vote_mutation
+from src.mutations.create_events import create_event_proposal_vote_mutation
 
 
 def process_event_proposal_vote_event(hash, event_type, events, height, timestamp, tx):

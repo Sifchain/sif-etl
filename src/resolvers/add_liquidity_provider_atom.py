@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from src.mutations.add_liquidity_provider_db_atom import add_liquidity_provider_db_atom_mutation
+from src.mutations.add_liquidity_provider import add_liquidity_provider_db_atom_mutation
 from src.mutations.reset_liquidity_provider_db_atom import reset_liquidity_provider_db_atom_mutation
 from src.mutations.update_liquidity_provider_db_atom import update_liquidity_provider_db_atom_mutation
 from src.utils.setup_logger import setup_logger_util

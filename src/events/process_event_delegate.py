@@ -1,4 +1,4 @@
-from src.mutations.create_event_delegate import create_event_delegate_mutation
+from src.mutations.create_events import create_event_delegate_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 
 

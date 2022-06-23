@@ -24,7 +24,7 @@ from src.events.process_event_unbond import process_event_unbond_event
 from src.events.process_event_unknown import process_event_unknown_event
 from src.events.process_event_update_client import process_event_update_client_event
 from src.events.process_event_user_claim import process_event_user_claim_event
-from src.mutations.create_event_unknown_tx import create_event_unknown_tx_mutation
+from src.mutations.create_events import create_event_unknown_tx_mutation
 from src.queries.get_token_decimal_dictionary import get_token_decimal_dictionary_query
 from src.services.sifapi import *
 from src.utils.create_hash import create_hash_util

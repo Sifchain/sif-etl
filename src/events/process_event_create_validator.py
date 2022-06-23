@@ -1,6 +1,6 @@
 import logging
 
-from src.mutations.create_event_create_validator import create_event_create_validator_mutation
+from src.mutations.create_events import create_event_create_validator_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 from src.utils.clean_parse_token import clean_parse_token_util
 from src.utils.setup_logger import setup_logger_util
