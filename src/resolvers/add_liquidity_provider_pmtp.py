@@ -6,7 +6,7 @@ import requests
 
 from src.mutations.add_pmtp_pool_db import add_pmtp_pool_db_mutation
 from src.mutations.add_pool_info_db_pmtp import add_pool_info_db_pmtp_mutation
-from src.mutations.reset_liquidity_provider_pmtp_db import reset_liquidity_provider_pmtp_db_mutation
+from src.mutations.reset_liquidity_provider import reset_liquidity_provider_pmtp_db_mutation
 from src.utils.setup_logger import setup_logger_util
 
 LCD_SERVER_PMTP = os.getenv("LCD_SERVER_PMTP")

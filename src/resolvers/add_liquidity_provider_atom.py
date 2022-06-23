@@ -4,8 +4,8 @@ import time
 import requests
 
 from src.mutations.add_liquidity_provider import add_liquidity_provider_db_atom_mutation
-from src.mutations.reset_liquidity_provider_db_atom import reset_liquidity_provider_db_atom_mutation
-from src.mutations.update_liquidity_provider_db_atom import update_liquidity_provider_db_atom_mutation
+from src.mutations.reset_liquidity_provider import reset_liquidity_provider_db_atom_mutation
+from src.mutations.update_liquidity_provider import update_liquidity_provider_db_atom_mutation
 from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")

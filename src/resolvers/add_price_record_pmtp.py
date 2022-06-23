@@ -1,6 +1,6 @@
 from datetime import timezone, datetime
 
-from src.mutations.create_price_record_pmtp import create_price_record_pmtp_mutation
+from src.mutations.create_price import create_price_record_pmtp_mutation
 from src.queries.get_token_volumes_pmtp import get_token_volumes_pmtp_query
 from src.services.sifapi import *
 from src.utils.setup_logger import setup_logger_util

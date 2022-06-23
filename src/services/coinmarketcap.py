@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from src.mutations.create_cmc_price_record_batch import create_cmc_price_record_batch_mutation
+from src.mutations.create_cmc_price import create_cmc_price_record_batch_mutation
 from src.services.sifapi import *
 from src.utils.setup_logger import setup_logger_util
 
