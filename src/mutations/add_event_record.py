@@ -229,7 +229,7 @@ def add_event_record_mutation(height=1):
                                 f"Unknown Event:  {event_type} at {height}")
                             process_event_unknown_event(
                                 hash, event_type, events, height, timestamp)
-                            raise Exception("Unknown Event - {event_type}")
+                            raise Exception(f"Unknown Event - {event_type}")
 
             except Exception as e:
                 logger.critical(

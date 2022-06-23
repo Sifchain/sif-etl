@@ -37,11 +37,10 @@ def create_event_acknowledge_packet_mutation(hash, event_type,
     dt_sender, dt_receiver, dt_denom, dt_amount, ap_success, 
     dt_packet_src_port, dt_packet_src_channel, dt_packet_dst_port, dt_packet_dst_channel, dt_packet_channel_ordering,
     dt_packet_connection, dt_packet_timeout_timestamp, dt_packet_timeout_height, dt_packet_sequence, ap_module)
-    VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', 
-    '{5}', '{6}', '{7}', '{8}', '{9}', 
+    select '{0}', '{1}', '{2}', '{3}', '{4}', 
+    '{5}', '{6}', '{7}', cast(nullif('None','None') as numeric), '{9}', 
     '{10}','{11}','{12}','{13}','{14}', 
-    '{15}','{16}','{17}','{18}','{19}'
-    )
+    '{15}','{16}','{17}','{18}','{19}'    
     '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
                sender, receiver, denom, amount, success,
                packet_src_port, packet_src_channel, packet_dst_port, packet_dst_channel, packet_channel_ordering,
