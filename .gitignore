@@ -133,3 +133,10 @@ pyvenv.cfg
 bin
 include
 lib
+/.idea/dbnavigator.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/sif-etl.iml
+/.idea/vcs.xml
+/.idea/workspace.xml
