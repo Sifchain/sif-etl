@@ -24,5 +24,5 @@ def latest_run_command():
             logger.debug(f"Processing {height}")
             add_event_record_mutation(height)
         else:
-            logger.debug(f"Skiping {height} already processed.")
+            logger.debug(f"Skipping {height} already processed.")
         height += 1

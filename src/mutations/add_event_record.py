@@ -15,10 +15,10 @@ from src.events.process_event_lock import process_event_lock_event
 from src.events.process_event_proposal_deposit import process_event_proposal_deposit_event
 from src.events.process_event_proposal_vote import process_event_proposal_vote_event
 from src.events.process_event_record_burn import process_event_record_burn_event
-from src.events.process_event_record_withdraw_rewards import process_event_record_withdraw_rewards_event
 from src.events.process_event_redelegate import process_event_redelegate_event
 from src.events.process_event_remove_liquidity import process_event_remove_liquidity_event
 from src.events.process_event_request_unlock_liquidity import process_event_request_unlock_liquidity_event
+from src.events.process_event_reward import process_event_record_rewards_event
 from src.events.process_event_swap import process_event_swap_event
 from src.events.process_event_unbond import process_event_unbond_event
 from src.events.process_event_unknown import process_event_unknown_event
@@ -60,7 +60,7 @@ def add_event_record_mutation(height=1):
                 event_type = 'NO_TXN_TYPE'
 
                 create_event_unknown_tx_mutation(
-                    hash, event_type, events,  height, timestamp)
+                    hash, event_type, events, height, timestamp)
                 return
             except Exception as e:
                 logger.critical(f"Bad stuff - {height}: {e}")
@@ -125,9 +125,9 @@ def add_event_record_mutation(height=1):
                                 hash, event_type, events, height, timestamp, token_decimal_dict, tx)
                             continue
 
-                        elif event_type == 'withdraw_rewards':
-                            process_event_record_withdraw_rewards_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                        elif event_type in ('withdraw_rewards', 'withdraw_commission'):
+                            process_event_record_rewards_event(hash, event_type, events, height, timestamp,
+                                                               token_decimal_dict)
                             continue
 
                         elif event_type == 'lock':
@@ -223,6 +223,10 @@ def add_event_record_mutation(height=1):
                         elif event_type == 'submit_proposal':
                             logger.critical(
                                 f"Already handled at proposal deposit at {height}")
+
+                        elif event_type == 'withdraw_commission':
+                            process_event_withdraw_commission_event(hash, event_type, events, height, timestamp)
+                            continue
 
                         else:
                             logger.critical(

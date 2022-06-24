@@ -38,7 +38,7 @@ def create_event_acknowledge_packet_mutation(hash, event_type,
     dt_packet_src_port, dt_packet_src_channel, dt_packet_dst_port, dt_packet_dst_channel, dt_packet_channel_ordering,
     dt_packet_connection, dt_packet_timeout_timestamp, dt_packet_timeout_height, dt_packet_sequence, ap_module)
     select '{0}', '{1}', '{2}', '{3}', '{4}', 
-    '{5}', '{6}', '{7}', cast(nullif('None','None') as numeric), '{9}', 
+    '{5}', '{6}', '{7}', cast(nullif('{8}','None') as numeric), '{9}', 
     '{10}','{11}','{12}','{13}','{14}', 
     '{15}','{16}','{17}','{18}','{19}'    
     '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
@@ -79,34 +79,13 @@ def create_event_add_liquidity_mutation(hash, event_type,
     database_service.execute_update(sql_str)
 
 
-def create_event_withdraw_rewards_mutation(hash, event_type,
-                                           events_arr, height, timestamp, recipient_addr,
-                                           sender_addr, amount, token):
-
-    if amount is None:
-        sql_str = """
-        INSERT INTO events_audit
-        (hash, type, log, height, time, 
-        wr_recipient_addr,
-        wr_sender_addr)
-        VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', 
-        '{5}', 
-        '{6}')
-        """.format(hash, event_type, json.dumps(events_arr), height, timestamp,
-                   recipient_addr,
-                   sender_addr)
-    else:
-        sql_str = '''
-            INSERT INTO events_audit
-            (hash, type, log, height, time, 
-            wr_recipient_addr,
-            wr_sender_addr, wr_amount, wr_token)
-            VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', 
-            '{5}', 
-            '{6}', '{7}', '{8}')
-            '''.format(hash, event_type, json.dumps(events_arr), height, timestamp,
-                       recipient_addr, sender_addr, amount, token)
-
+def create_event_rewards_mutation(_hash, event_type, events_arr, height, timestamp, recipient_addr, sender_addr,
+                                  amount, token) -> None:
+    sql_str = f"""
+    insert into events_audit(hash, type, log, height, time,wr_recipient_addr,wr_sender_addr, wr_amount, wr_token)
+    select '{_hash}', '{event_type}', '{json.dumps(events_arr)}', '{height}', '{timestamp}', '{recipient_addr}'
+    ,'{sender_addr}', cast(nullif('{amount}','None') as numeric), cast(nullif('{token}','None') as varchar) 
+    """
     database_service.execute_update(sql_str)
 
 
@@ -165,13 +144,22 @@ def create_event_update_client_mutation(hash, event_type,
     database_service.execute_update(sql_str)
 
 
-def create_event_unknown_tx_mutation(hash, event_type, events_arr, height, timestamp):
+def create_event_withdraw_commission_mutation(_hash, event_type, events_arr, height, timestamp, amount) -> None:
+    sql_str = f"""
+    insert into events_audit(hash, type, log, height, time, wc_amount)
+    select '{_hash}', '{event_type}', '{json.dumps(events_arr)}', '{height}', '{timestamp}'
+    ,cast(nullif('{amount}','None') as numeric)
+    """
+    database_service.execute_update(sql_str)
+    
+
+def create_event_unknown_tx_mutation(_hash, event_type, events_arr, height, timestamp) -> None:
     sql_str = """
     INSERT INTO events_audit
     (hash, type, log, height, time)
     VALUES
     ('{0}', '{1}', '{2}', '{3}', '{4}')
-    """.format(hash, event_type, json.dumps(events_arr), height, timestamp)
+    """.format(_hash, event_type, json.dumps(events_arr), height, timestamp)
 
     database_service.execute_update(sql_str)
 
