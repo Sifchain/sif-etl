@@ -1,4 +1,4 @@
-from services import database_service
+from src.services.database import database_service
 
 
 def update_token_registry_db_mutation(token, current_time):

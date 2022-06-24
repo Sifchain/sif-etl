@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
-import logging
-from services.sifapi import latest_token_registry_sifapi
-from mutations import update_token_registry_db_mutation
-from utils import setup_logger_util
+
+from src.mutations.update_token_registry_db import update_token_registry_db_mutation
+from src.services.sifapi import *
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("refresh_token_registry_resolver", formatter)

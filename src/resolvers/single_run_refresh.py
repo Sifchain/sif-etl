@@ -1,5 +1,5 @@
-from queries import get_re_processed_heights_query
-from mutations import add_event_record_mutation
+from src.mutations.add_event_record import add_event_record_mutation
+from src.queries.get_re_processed_heights import get_re_processed_heights_query
 
 
 def single_run_refresh_resolver():

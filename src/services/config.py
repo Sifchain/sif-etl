@@ -1,6 +1,7 @@
 # postgres config
 import os
 from os.path import join, dirname, realpath
+
 from dotenv import load_dotenv
 
 
@@ -39,6 +40,7 @@ class ConfigService:
         self.api_config = {
             "RPC_SERVER_URL": os.getenv("RPC_SERVER_URL"),
             "LCD_SERVER_URL": os.getenv("LCD_SERVER_URL"),
+            "LCD_SERVER_PMTP": os.getenv("LCD_SERVER_PMTP"),
             "TOKEN_LIST_URL": os.getenv("TOKEN_LIST_URL", ""),
             "TOKEN_LIST": os.getenv("TOKEN_LIST", ""),
             "COINMARKETCAP_URL": os.getenv("COINMARKETCAP_URL", ""),

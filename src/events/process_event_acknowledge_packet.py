@@ -1,14 +1,12 @@
-from mutations.create_event_acknowledge_packet import create_event_acknowledge_packet_mutation
+from src.mutations.create_events import create_event_acknowledge_packet_mutation
 
 
-def process_event_acknowledge_packet_event(hash, event_type, events, height, timestamp):
-
+def process_event_acknowledge_packet_event(_hash, event_type, events, height, timestamp):
     amount = None
     sender = ""
     receiver = ""
     denom = ""
     success = True
-
     ack_packetObj = {}
     fungible_tokenObj = {}
 
@@ -61,7 +59,7 @@ def process_event_acknowledge_packet_event(hash, event_type, events, height, tim
         if obj["key"] == "packet_connection":
             packet_connection = obj["value"]
 
-    create_event_acknowledge_packet_mutation(hash, event_type, events,  height, timestamp,
+    create_event_acknowledge_packet_mutation(_hash, event_type, events, height, timestamp,
                                              sender, receiver, denom, amount, success, packet_src_port,
                                              packet_src_channel, packet_dst_port, packet_dst_channel, packet_channel_ordering,
                                              packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence, module)

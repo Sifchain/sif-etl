@@ -1,5 +1,5 @@
-from mutations.create_event_delegate import create_event_delegate_mutation
-from utils import clean_parse_amount_util
+from src.mutations.create_events import create_event_delegate_mutation
+from src.utils.clean_parse_amount import clean_parse_amount_util
 
 
 def process_event_delegate_event(hash, event_type, events, height, timestamp, tx):

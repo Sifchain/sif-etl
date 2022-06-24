@@ -1,16 +1,19 @@
 import re
-from utils import clean_parse_amount_util
-from mutations.create_event_withdraw_rewards import create_event_withdraw_rewards_mutation
+
+from src.mutations.create_events import *
+from src.utils.clean_parse_amount import clean_parse_amount_util
 
 
-def process_event_record_withdraw_rewards_event(hash, event_type, events, height, timestamp, token_decimal_dict):
+def process_event_record_rewards_event(_hash, event_type, events, height, timestamp, token_decimal_dict) -> None:
     recipient_addr = ''
     sender_addr = ''
+    amount = None
     raw_amount = None
-
+    token = None
     transferObj = {}
     msgObj = {}
     withdrawObj = {}
+
     for event in events:
         if event["type"] == "message":
             msgObj = event["attributes"]
@@ -27,16 +30,17 @@ def process_event_record_withdraw_rewards_event(hash, event_type, events, height
                 sender_addr = obj['value']
             if obj['key'] == 'amount':
                 raw_amount = obj['value']
-        except:
+        except KeyError:
             continue
 
     for obj in withdrawObj:
         try:
-            if obj["key"] == "validator":
-                recipient_addr = obj["value"]
+            if event_type == "withdraw_rewards":
+                if obj["key"] == "validator":
+                    recipient_addr = obj["value"]
             if obj["key"] == "amount":
                 raw_amount = obj["value"]
-        except:
+        except KeyError:
             continue
 
     for obj in msgObj:
@@ -49,7 +53,7 @@ def process_event_record_withdraw_rewards_event(hash, event_type, events, height
     else:
         token = re.sub('[0-9]', '', str(raw_amount)).strip()
         token_decimals = token_decimal_dict[token]
-        amount = clean_parse_amount_util(raw_amount)/10**token_decimals
+        amount = clean_parse_amount_util(raw_amount) / 10 ** token_decimals
 
-    create_event_withdraw_rewards_mutation(hash, event_type, events, height, timestamp,
-                                           recipient_addr, sender_addr, amount, token)
+    create_event_rewards_mutation(_hash, event_type, events, height, timestamp, recipient_addr, sender_addr, amount,
+                                  token)

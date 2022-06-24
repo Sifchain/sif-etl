@@ -1,7 +1,7 @@
 import logging
-from services import database_service
-from queries.get_token_price_usd import get_token_price_usd_query
-from utils import setup_logger_util
+
+from src.services.database import database_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_token_volumes_query", formatter)

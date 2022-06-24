@@ -1,14 +1,15 @@
-import time
 import logging
-from services import database_service
-from utils import setup_logger_util
+import time
+
+from src.services.database import database_service
+from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("add_pool_info_db_pmtp_mutation", formatter)
 
 
 def add_pool_info_db_pmtp_mutation(pool, height, native_asset_balance, external_asset_balance):
-    t0 = time()
+    t0 = time.time()
 
     sql_str = f"""
         delete from pmtp_pool_info where pool='{pool}'
@@ -50,5 +51,5 @@ def add_pool_info_db_pmtp_mutation(pool, height, native_asset_balance, external_
 
     database_service.execute_query(sql_str)
 
-    tf = time()
+    tf = time.time()
     logger.info(f"Pool Info updated in {tf-t0} seconds")

@@ -1,12 +1,34 @@
-import requests
-import logging
 import json
-from services.config import config_service
-from utils import setup_logger_util, create_hash_util
-from services.sifapi import get_timestamp_from_height_sifapi
-from queries.get_token_decimal_dictionary import get_token_decimal_dictionary_query
-from mutations.create_event_unknown_tx import create_event_unknown_tx_mutation
-from events import process_event_acknowledge_packet_event, process_event_add_liquidity_event, process_event_add_liquidity_event, process_event_cancel_unlock_liquidity_event, process_event_create_claim_event, process_event_create_validator_event, process_event_delegate_event, process_event_denomination_trace_event, process_event_distribution_record_event, process_event_distribution_started_event, process_event_edit_validator_event, process_event_ibc_transfer_event, process_event_lock_event, process_event_proposal_deposit_event, process_event_proposal_vote_event, process_event_record_burn_event, process_event_record_withdraw_rewards_event, process_event_redelegate_event, process_event_remove_liquidity_event, process_event_request_unlock_liquidity_event, process_event_swap_event, process_event_unbond_event, process_event_unknown_event, process_event_update_client_event, process_event_user_claim_event
+
+from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
+from src.events.process_event_add_liquidity import process_event_add_liquidity_event
+from src.events.process_event_cancel_unlock_liquidity import process_event_cancel_unlock_liquidity_event
+from src.events.process_event_create_claim import process_event_create_claim_event
+from src.events.process_event_create_validator import process_event_create_validator_event
+from src.events.process_event_delegate import process_event_delegate_event
+from src.events.process_event_denomination_trace import process_event_denomination_trace_event
+from src.events.process_event_distribution_record import process_event_distribution_record_event
+from src.events.process_event_distribution_started import process_event_distribution_started_event
+from src.events.process_event_edit_validator import process_event_edit_validator_event
+from src.events.process_event_ibc_transfer import process_event_ibc_transfer_event
+from src.events.process_event_lock import process_event_lock_event
+from src.events.process_event_proposal_deposit import process_event_proposal_deposit_event
+from src.events.process_event_proposal_vote import process_event_proposal_vote_event
+from src.events.process_event_record_burn import process_event_record_burn_event
+from src.events.process_event_redelegate import process_event_redelegate_event
+from src.events.process_event_remove_liquidity import process_event_remove_liquidity_event
+from src.events.process_event_request_unlock_liquidity import process_event_request_unlock_liquidity_event
+from src.events.process_event_reward import process_event_record_rewards_event
+from src.events.process_event_swap import process_event_swap_event
+from src.events.process_event_unbond import process_event_unbond_event
+from src.events.process_event_unknown import process_event_unknown_event
+from src.events.process_event_update_client import process_event_update_client_event
+from src.events.process_event_user_claim import process_event_user_claim_event
+from src.mutations.create_events import create_event_unknown_tx_mutation
+from src.queries.get_token_decimal_dictionary import get_token_decimal_dictionary_query
+from src.services.sifapi import *
+from src.utils.create_hash import create_hash_util
+from src.utils.setup_logger import setup_logger_util
 
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
 
@@ -38,7 +60,7 @@ def add_event_record_mutation(height=1):
                 event_type = 'NO_TXN_TYPE'
 
                 create_event_unknown_tx_mutation(
-                    hash, event_type, events,  height, timestamp)
+                    hash, event_type, events, height, timestamp)
                 return
             except Exception as e:
                 logger.critical(f"Bad stuff - {height}: {e}")
@@ -103,9 +125,9 @@ def add_event_record_mutation(height=1):
                                 hash, event_type, events, height, timestamp, token_decimal_dict, tx)
                             continue
 
-                        elif event_type == 'withdraw_rewards':
-                            process_event_record_withdraw_rewards_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                        elif event_type in ('withdraw_rewards', 'withdraw_commission'):
+                            process_event_record_rewards_event(hash, event_type, events, height, timestamp,
+                                                               token_decimal_dict)
                             continue
 
                         elif event_type == 'lock':
@@ -202,12 +224,16 @@ def add_event_record_mutation(height=1):
                             logger.critical(
                                 f"Already handled at proposal deposit at {height}")
 
+                        elif event_type == 'withdraw_commission':
+                            process_event_withdraw_commission_event(hash, event_type, events, height, timestamp)
+                            continue
+
                         else:
                             logger.critical(
                                 f"Unknown Event:  {event_type} at {height}")
                             process_event_unknown_event(
                                 hash, event_type, events, height, timestamp)
-                            raise Exception("Unknown Event - {event_type}")
+                            raise Exception(f"Unknown Event - {event_type}")
 
             except Exception as e:
                 logger.critical(

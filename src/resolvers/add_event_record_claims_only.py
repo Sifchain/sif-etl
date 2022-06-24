@@ -1,11 +1,10 @@
-import requests
 import json
-import logging
-from services import config_service
-from services.sifapi import get_timestamp_from_height_sifapi
-from utils import create_hash_util, setup_logger_util
-from queries import get_token_decimal_dictionary_query
-from events import process_event_user_claim_event
+
+from src.events.process_event_user_claim import process_event_user_claim_event
+from src.queries.get_token_decimal_dictionary import get_token_decimal_dictionary_query
+from src.services.sifapi import *
+from src.utils.create_hash import create_hash_util
+from src.utils.setup_logger import setup_logger_util
 
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
 
@@ -36,7 +35,7 @@ def add_event_record_claims_only_resolver(height=1):
                 events = log_message['begin_block_events']
                 event_type = 'NO_TXN_TYPE'
 
-                #create_event_unknown_tx(hash, event_type, events,  height, timestamp)
+
                 return
             except Exception as e:
                 logger.critical(f"Bad stuff - {height}: {e}")

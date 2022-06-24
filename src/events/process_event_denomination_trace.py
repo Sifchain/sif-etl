@@ -1,4 +1,4 @@
-from mutations.create_event_denomination_trace import create_event_denomination_trace_mutation
+from src.mutations.create_events import create_event_denomination_trace_mutation
 
 
 def process_event_denomination_trace_event(hash, event_type, events, height, timestamp):

@@ -1,4 +1,4 @@
-from services import database_service
+from src.services.database import database_service
 
 
 def restore_events_query():

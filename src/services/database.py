@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
-from services.config import config_service
+
+from src.services.config import config_service
 
 
 class DatabaseService:

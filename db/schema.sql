@@ -1,3 +1,21 @@
+-- public.pmtp_pool_info definition
+
+-- Drop table
+
+-- DROP TABLE public.pmtp_pool_info;
+
+CREATE TABLE public.pmtp_pool_info (
+	height int4 NULL,
+	pool varchar NULL,
+	native_asset_balance numeric NULL,
+	external_asset_balance numeric NULL,
+	asset_balance_in_usd numeric NULL,
+	native_asset_bal_usd numeric NULL,
+	external_asset_bal_usd numeric NULL,
+	external_price_usd numeric NULL,
+	native_price_usd numeric NULL,
+	pool_units numeric NULL
+);
 
 CREATE TABLE POOLS (
 	created_at TIMESTAMP DEFAULT NOW(),
