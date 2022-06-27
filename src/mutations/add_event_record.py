@@ -1,12 +1,13 @@
 import json
 
 from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
-from src.events.process_event_add_liquidity import process_event_add_liquidity_event
+from src.events.process_event_liquidity_related import process_event_add_create_liquidity_event, \
+    process_event_remove_liquidity_event
 from src.events.process_event_cancel_unlock_liquidity import process_event_cancel_unlock_liquidity_event
 from src.events.process_event_create_claim import process_event_create_claim_event
 from src.events.process_event_create_validator import process_event_create_validator_event
 from src.events.process_event_delegate import process_event_delegate_event
-from src.events.process_event_denomination_trace import process_event_denomination_trace_event
+from src.events.process_event_denomination_trace import process_event_transaction_event
 from src.events.process_event_distribution_record import process_event_distribution_record_event
 from src.events.process_event_distribution_started import process_event_distribution_started_event
 from src.events.process_event_edit_validator import process_event_edit_validator_event
@@ -16,7 +17,6 @@ from src.events.process_event_proposal_deposit import process_event_proposal_dep
 from src.events.process_event_proposal_vote import process_event_proposal_vote_event
 from src.events.process_event_record_burn import process_event_record_burn_event
 from src.events.process_event_redelegate import process_event_redelegate_event
-from src.events.process_event_remove_liquidity import process_event_remove_liquidity_event
 from src.events.process_event_request_unlock_liquidity import process_event_request_unlock_liquidity_event
 from src.events.process_event_reward import process_event_record_rewards_event
 from src.events.process_event_swap import process_event_swap_event
@@ -38,11 +38,8 @@ logger = setup_logger_util("add_event_record_mutation", formatter)
 
 def add_event_record_mutation(height=1):
     try:
-        block_result_url = '{0}/block_results?height={1}'.format(
-            RPC_SERVER_URL, height)
-
+        block_result_url = '{0}/block_results?height={1}'.format(RPC_SERVER_URL, height)
         data = requests.get(block_result_url).json()
-
         timestamp = get_timestamp_from_height_sifapi(height)
 
         if data['result'].get('txs_results', None) is None:
@@ -54,13 +51,13 @@ def add_event_record_mutation(height=1):
                 if log_message == '':
                     raise Exception("result is empty")
 
-                hash = create_hash_util(json.dumps(log_message), timestamp)
+                _hash = create_hash_util(json.dumps(log_message), timestamp)
 
                 events = log_message['begin_block_events']
                 event_type = 'NO_TXN_TYPE'
 
                 create_event_unknown_tx_mutation(
-                    hash, event_type, events, height, timestamp)
+                    _hash, event_type, events, height, timestamp)
                 return
             except Exception as e:
                 logger.critical(f"Bad stuff - {height}: {e}")
@@ -78,18 +75,16 @@ def add_event_record_mutation(height=1):
                 for e in error_msg:
                     if tx['log'].startswith(e):
                         ignore = True
-
                 if ignore:
                     continue
-
                 log_message = None
                 try:
                     log_message = json.loads(tx["log"])
-                except Exception as e:
+                except Exception:
                     logger.info(f"Unable to parse into json - {tx['log']}")
                     continue
 
-                hash = create_hash_util(json.dumps(tx['log']), timestamp)
+                _hash = create_hash_util(json.dumps(tx['log']), timestamp)
 
                 for message in log_message:
                     events = message["events"]
@@ -111,128 +106,112 @@ def add_event_record_mutation(height=1):
                         # TODO: process event should be refactored as a class.
 
                         if event_type == 'delegate':
-                            process_event_delegate_event(
-                                hash, event_type, events, height, timestamp, tx)
+                            process_event_delegate_event(_hash, event_type, events, height, timestamp, tx)
                             continue
 
                         elif event_type == 'userClaim_new':
-                            process_event_user_claim_event(
-                                hash, event_type, events, height, timestamp)
+                            process_event_user_claim_event(_hash, event_type, events, height, timestamp)
                             continue
 
                         elif event_type == 'request_unlock_liquidity':
-                            process_event_request_unlock_liquidity_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_request_unlock_liquidity_event(_hash, event_type, events, height, timestamp,
+                                                                         token_decimal_dict, tx)
                             continue
 
                         elif event_type in ('withdraw_rewards', 'withdraw_commission'):
-                            process_event_record_rewards_event(hash, event_type, events, height, timestamp,
+                            process_event_record_rewards_event(_hash, event_type, events, height, timestamp,
                                                                token_decimal_dict)
                             continue
 
                         elif event_type == 'lock':
-                            process_event_lock_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_lock_event(_hash, event_type, events, height, timestamp, token_decimal_dict)
                             continue
+
                         elif event_type == 'update_client':
-                            process_event_update_client_event(
-                                hash, event_type, events, height, timestamp)
+                            process_event_update_client_event(_hash, event_type, events, height, timestamp)
                             continue
 
                         elif event_type == 'acknowledge_packet':
-                            process_event_acknowledge_packet_event(
-                                hash, event_type, events, height, timestamp)
+                            process_event_acknowledge_packet_event(_hash, event_type, events, height, timestamp)
                             continue
 
                         elif event_type.startswith('distribution_record'):
-                            process_event_distribution_record_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_distribution_record_event(_hash, event_type, events, height, timestamp,
+                                                                    token_decimal_dict, tx)
                             continue
 
                         elif event_type == 'redelegate':
-                            process_event_redelegate_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_redelegate_event(_hash, event_type, events, height, timestamp,
+                                                           token_decimal_dict, tx)
                             continue
 
                         elif event_type == 'burn':
-                            process_event_record_burn_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_record_burn_event(_hash, event_type, events, height, timestamp,
+                                                            token_decimal_dict)
                             continue
 
                         elif event_type == 'unbond':
-                            process_event_unbond_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_unbond_event(_hash, event_type, events, height, timestamp, token_decimal_dict)
                             continue
 
                         elif event_type == 'create_claim':
-                            process_event_create_claim_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_create_claim_event(_hash, event_type, events, height, timestamp,
+                                                             token_decimal_dict)
                             continue
 
                         elif event_type == 'removed_liquidity':
-                            process_event_remove_liquidity_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_remove_liquidity_event(_hash, event_type, events, height, timestamp,
+                                                                 token_decimal_dict)
                             continue
 
-                        elif event_type == 'added_liquidity':
-                            process_event_add_liquidity_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                        elif event_type in ('added_liquidity', 'created_new_liquidity_provider'):
+                            process_event_add_create_liquidity_event(_hash, event_type, events, height, timestamp,
+                                                                     token_decimal_dict)
                             continue
 
                         elif event_type == 'swap_successful':
-                            process_event_swap_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict)
+                            process_event_swap_event(_hash, event_type, events, height, timestamp, token_decimal_dict)
                             continue
 
                         elif event_type == 'create_validator':
-                            process_event_create_validator_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_create_validator_event(_hash, event_type, events, height, timestamp,
+                                                                 token_decimal_dict, tx)
                             continue
 
                         elif event_type == 'edit_validator':
-                            process_event_edit_validator_event(
-                                hash, event_type, events, height, timestamp, tx)
+                            process_event_edit_validator_event(_hash, event_type, events, height, timestamp, tx)
 
                         elif event_type == 'proposal_vote':
-                            process_event_proposal_vote_event(
-                                hash, event_type, events, height, timestamp, tx)
+                            process_event_proposal_vote_event(_hash, event_type, events, height, timestamp, tx)
 
                         elif event_type == 'distribution_started':
-                            process_event_distribution_started_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_distribution_started_event(_hash, event_type, events, height, timestamp,
+                                                                     token_decimal_dict, tx)
 
                         elif event_type == 'proposal_deposit':
-                            process_event_proposal_deposit_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_proposal_deposit_event(_hash, event_type, events, height, timestamp,
+                                                                 token_decimal_dict, tx)
 
-                        elif event_type == 'denomination_trace':
-                            process_event_denomination_trace_event(
-                                hash, event_type, events, height, timestamp)
+                        elif event_type in ('denomination_trace', 'coinbase'):
+                            process_event_transaction_event(_hash, event_type, events, height, timestamp)
                             continue
 
                         elif event_type == 'ibc_transfer':
-                            process_event_ibc_transfer_event(
-                                hash, event_type, events, height, timestamp)
+                            process_event_ibc_transfer_event(_hash, event_type, events, height, timestamp)
                             continue
 
                         elif event_type == 'cancel_unlock_liquidity':
-                            process_event_cancel_unlock_liquidity_event(
-                                hash, event_type, events, height, timestamp, token_decimal_dict, tx)
+                            process_event_cancel_unlock_liquidity_event(_hash, event_type, events, height, timestamp,
+                                                                        token_decimal_dict, tx)
                             continue
 
                         elif event_type == 'submit_proposal':
-                            logger.critical(
-                                f"Already handled at proposal deposit at {height}")
-
-                        elif event_type == 'withdraw_commission':
-                            process_event_withdraw_commission_event(hash, event_type, events, height, timestamp)
+                            logger.critical(f"Already handled at proposal deposit at {height}")
                             continue
 
                         else:
-                            logger.critical(
-                                f"Unknown Event:  {event_type} at {height}")
-                            process_event_unknown_event(
-                                hash, event_type, events, height, timestamp)
+                            logger.critical(f"Unknown Event:  {event_type} at {height}")
+                            process_event_unknown_event(_hash, event_type, events, height, timestamp)
                             raise Exception(f"Unknown Event - {event_type}")
 
             except Exception as e:

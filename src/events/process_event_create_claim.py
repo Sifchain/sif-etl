@@ -3,8 +3,7 @@ from src.utils.clean_parse_amount import clean_parse_amount_util
 from src.utils.clean_parse_token import clean_parse_token_util
 
 
-def process_event_create_claim_event(hash, event_type, events, height, timestamp, token_decimal_dict):
-
+def process_event_create_claim_event(_hash, event_type, events, height, timestamp, token_decimal_dict):
     claim_type = ""
     module = ""
     prophecy_status = ""
@@ -41,9 +40,7 @@ def process_event_create_claim_event(hash, event_type, events, height, timestamp
     else:
         token = clean_parse_token_util(raw_amount)
         token_decimals = token_decimal_dict[token]
-        amount = clean_parse_amount_util(raw_amount)/10**token_decimals
+        amount = clean_parse_amount_util(raw_amount) / 10 ** token_decimals
 
-    create_event_create_claim_mutation(hash, event_type, events, height, timestamp,
-                                       recipient_addr, sender_addr, amount, token,
-                                       claim_type, module, prophecy_status
-                                       )
+    create_event_create_claim_mutation(_hash, event_type, events, height, timestamp, recipient_addr, sender_addr,
+                                       amount, token, claim_type, module, prophecy_status)
