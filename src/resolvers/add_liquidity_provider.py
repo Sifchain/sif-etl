@@ -120,7 +120,7 @@ def add_liquidity_provider_pmtp_resolver():
 
     t0 = time.time()
 
-    reset_liquidity_provider_pmtp_db_mutation()
+    # reset_liquidity_provider_pmtp_db_mutation()
 
     for token in token_list:
         #        tt0=time()

@@ -13,15 +13,10 @@ from src.resolvers.refresh_token_registry import refresh_token_registry_resolver
 from src.resolvers.update_once_day import update_once_day_resolver
 
 if __name__ == '__main__':
-    #### NO COMMAND USED ####
     if len(sys.argv) <= 1:
         print("No command has been passed")
-
-    #### RELATED TO AIRDROPS #####
     elif sys.argv[1] == 'cron':
         latest_run_command()
-
-    #### TOKEN/PRICE UPDATES #####
     elif sys.argv[1] == 'tokenregistry':
         refresh_token_registry_resolver()
     elif sys.argv[1] == 'external_price':
@@ -30,21 +25,17 @@ if __name__ == '__main__':
         add_price_record_resolver()
     elif sys.argv[1] == 'add_price_record_pmtp':
         add_price_record_pmtp_resolver()
-
     elif sys.argv[1] == 'add_price_record_continuous':
         add_price_record_continuous_resolver()
     elif sys.argv[1] == 'refresh_pricespikes':
         add_spiked_cache_resolver()
-
     elif sys.argv[1] == 'update_once_day':
         update_once_day_resolver()
     elif sys.argv[1] == 'add_pool_record_continuous':
-        add_pool_record_continuous_resolver()
-
-    ##### EVENTS_AUDIT UPDATES #####
+        pass
+        # add_pool_record_continuous_resolver()
     elif sys.argv[1] == 'event_record_continuous':
         event_record_continuous_command()
-
     else:
         # Test out one event dispensation
         # This is claims snapshot

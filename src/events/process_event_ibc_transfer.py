@@ -1,4 +1,4 @@
-from src.mutations.create_events import create_event_denomination_trace_mutation
+from src.mutations.create_events import create_event_transaction_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 from src.utils.clean_parse_token import clean_parse_token_util
 
@@ -61,7 +61,7 @@ def process_event_ibc_transfer_event(hash, event_type, events, height, timestamp
             denom = clean_parse_token_util(raw_amount)
             amount = clean_parse_amount_util(raw_amount)
 
-    create_event_denomination_trace_mutation(hash, event_type, events,  height, timestamp,
-                                             sender, receiver, denom, amount, success, packet_src_port,
-                                             packet_src_channel, packet_dst_port, packet_dst_channel, packet_channel_ordering,
-                                             packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence)
+    create_event_transaction_mutation(hash, event_type, events, height, timestamp,
+                                      sender, receiver, denom, amount, success, packet_src_port,
+                                      packet_src_channel, packet_dst_port, packet_dst_channel, packet_channel_ordering,
+                                      packet_connection, packet_timeout_timestamp, packet_timeout_height, packet_sequence)
