@@ -17,8 +17,7 @@ def get_unprocessed_heights_query(latest_height, start_height=None, event_type=N
                 (select min(height) from events_audit where height > 2556371), ({0})
               ) 
             WHERE
-              NOT EXISTS(SELECT height FROM events_audit WHERE height = generate_series 
-              and type in ('request_unlock_liquidity', 'cancel_unlock_liquidity') )
+              NOT EXISTS(SELECT height FROM events_audit WHERE height = generate_series )
               order by generate_series
         """.format(latest_height)
     else:

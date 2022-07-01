@@ -67,7 +67,7 @@ def _process_events(num_threads, initial_start, num_events, mode, cached_height)
 
 
 def _process_latest_events():
-    latest_processed_height = 7074426  # get_latest_processed_height_query()
+    latest_processed_height = get_latest_processed_height_query()
     last_event = get_latest_block_height_sifapi()
     unprocessed_heights = get_unprocessed_heights_query(last_event, latest_processed_height)
 
