@@ -2,6 +2,14 @@
 
 Deploy your own ETL server that extracts, transforms and loads sifchain data for analytics and application developments using your own database and `sif-api` instance.
 
+## Getting Started
+
+1. To build and full stack from local docker-compose environment:
+   `make up`
+
+2. To bring everything down:
+   `make down`
+
 ## Structure
 
 This repository is shaped as follows:

@@ -1,0 +1,54 @@
+version: "3.9"
+services:
+  timescaledb:
+    build: db/.
+    ports:
+      - "5490:5432"
+    logging:
+        options:
+          max-size: "10m"
+          max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dsadmin -d sifdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tokenregistry:
+    build:
+      context: .
+    env_file:
+      - docker.env
+    depends_on: 
+      timescaledb:
+        condition: service_healthy
+    entrypoint: python3 manager.py tokenregistry
+    logging:
+        options:
+          max-size: "10m"
+          max-file: "3"
+
+  pricing:
+    image: sif-etl_tokenregistry
+    depends_on: 
+      - tokenregistry
+    env_file:
+      - docker.env
+    entrypoint: python3 /sif-etl/manager.py add_price_record_continuous
+    logging:
+        options:
+          max-size: "10m"
+          max-file: "3"
+
+  events_audit:
+    image: sif-etl_tokenregistry
+    depends_on: 
+      - pricing 
+    env_file:
+      - docker.env
+    entrypoint: python3 manager.py event_record_continuous
+    logging:
+        options:
+          max-size: "10m"
+          max-file: "3"
+
