@@ -14,11 +14,10 @@ formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_price_records_pmtp_sifapi", formatter)
 
 
-def get_latest_block_height_sifapi():
+def get_latest_block_height_sifapi() -> int:
     url = f"{RPC_SERVER_URL}/status"
     json_data = requests.get(url).json()
-    latest_height = int(json_data["result"]
-                        ["sync_info"]["latest_block_height"])
+    latest_height = int(json_data["result"]["sync_info"]["latest_block_height"])
     return latest_height
 
 
@@ -79,8 +78,8 @@ def get_price_records_sifapi():
 
         # total tokens in this pool divided by its decimals
         external_asset_units = (
-            float(pool["external_asset_balance"]) /
-            10 ** external_asset_decimals
+                float(pool["external_asset_balance"]) /
+                10 ** external_asset_decimals
         )
 
         token_prices_dict[external_asset_symbol + "_rowan"] = float(
@@ -138,7 +137,7 @@ def get_price_records_pmtp_sifapi():
                 pool["reward_period_native_distributed"]
             )
             token_prices_dict[external_asset_symbol + "_cusdt"] = (
-                float(pool["swap_price_external"]) * rowan_cusdt
+                    float(pool["swap_price_external"]) * rowan_cusdt
             )
         except Exception as e:
             logger.info(f"couldn't resolve {e}")

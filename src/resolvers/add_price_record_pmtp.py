@@ -12,11 +12,9 @@ logger = setup_logger_util("add_price_record_pmtp_resolver", formatter)
 def add_price_record_pmtp_resolver():
     current_time = datetime.now(timezone.utc)
     try:
-        (token_prices_dict, rowan_cusdt, height,
-         timestamp) = get_price_records_pmtp_sifapi()
+        (token_prices_dict, rowan_cusdt, height, timestamp) = get_price_records_pmtp_sifapi()
         token_volumes_dict = get_token_volumes_pmtp_query()
-        create_price_record_pmtp_mutation(
-            height, timestamp, rowan_cusdt, token_prices_dict, token_volumes_dict)
+        create_price_record_pmtp_mutation(height, timestamp, rowan_cusdt, token_prices_dict, token_volumes_dict)
     except Exception as e:
         logger.info(f"What's the error: {e}")
 
