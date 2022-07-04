@@ -49,7 +49,7 @@ help:
 
 .PHONY: up
 up:
-	docker-compose up -d --scale emr=0
+	docker-compose up -d 
 	@make logs
 
 .PHONY: bash
@@ -84,7 +84,7 @@ log:
 
 .PHONY: down
 down:
-	docker-compose stop
+	docker-compose down --rmi all
 
 .PHONY: clean
 clean:
@@ -96,7 +96,7 @@ clean:
 
 .PHONY: clean_volumes
 clean_volumes:
-	@docker volume rm nexhealth_db_data
+#	@docker volume rm 
 	@echo "All clean 🛀"
 
 .PHONY: restart
@@ -107,11 +107,11 @@ restart:
 
 .PHONY: clean_start
 clean_start:
-	@echo "make down => make clean => make clean_volumes => make rebuild"
+	@echo "make down => make clean => make clean_volumes => make up"
 	@make down
 	@make clean
 	@make clean_volumes
-	@make rebuild
+	@make up
 
 .PHONY: lint
 lint:

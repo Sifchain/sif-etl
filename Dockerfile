@@ -28,4 +28,4 @@ WORKDIR /sif-etl
 
 FROM python_build as sifetl_run
 
-ENTRYPOINT ["python3", "/sif-etl/src/manager.py"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]

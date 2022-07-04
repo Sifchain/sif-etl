@@ -1,31 +1,6 @@
--- public.pmtp_pool_info definition
-
--- Drop table
-
--- DROP TABLE public.pmtp_pool_info;
-
-CREATE TABLE public.pmtp_pool_info (
-	height int4 NULL,
-	pool varchar NULL,
-	native_asset_balance numeric NULL,
-	external_asset_balance numeric NULL,
-	asset_balance_in_usd numeric NULL,
-	native_asset_bal_usd numeric NULL,
-	external_asset_bal_usd numeric NULL,
-	external_price_usd numeric NULL,
-	native_price_usd numeric NULL,
-	pool_units numeric NULL
-);
-
 CREATE TABLE POOLS (
 	created_at TIMESTAMP DEFAULT NOW(),
 	pool_data json,
-	id serial NOT NULL PRIMARY KEY
-);
-
-CREATE TABLE SNAPSHOTS_NEW (
-	created_at TIMESTAMP DEFAULT NOW(),
-	snapshot_data json,
 	id serial NOT NULL PRIMARY KEY
 );
 
@@ -37,23 +12,44 @@ CREATE TABLE PRICES (
 	token_volumes_24hr json,
 	id serial NOT NULL PRIMARY KEY
 );
+-- public.token_registry definition
+
+-- Drop table
+
+DROP TABLE if exists token_registry;
+
+CREATE TABLE token_registry (
+	base_denom varchar NOT NULL,
+	denom varchar NOT NULL,
+	decimals int4 NOT NULL,
+	modified timestamptz NOT NULL,
+	is_active bool NOT NULL
+);
+CREATE INDEX token_registry_base_denom_idx ON public.token_registry USING btree (base_denom);
+CREATE INDEX token_registry_denom_idx ON public.token_registry USING btree (denom);
+
+DROP TABLE IF EXISTS TokenPrices;
 
 
-DROP TABLE TokenPrices;
-
-CREATE TABLE TokenPrices (
+CREATE TABLE public.tokenprices (
 	"time" timestamptz NOT NULL,
 	asset_price float8 NULL,
 	asset varchar(15) NULL,
-	height int8 NULL
+	height int8 NULL,
+	is_interpolated bool NOT NULL DEFAULT false,
+	reward_distributed float8 NULL,
+	CONSTRAINT tokenprices_un UNIQUE ("time", asset, height)
 );
+CREATE INDEX tokenprices_asset_idx ON public.tokenprices USING btree (asset);
+CREATE INDEX tokenprices_asset_time_idx ON public.tokenprices USING btree (asset, "time" DESC);
+CREATE INDEX tokenprices_height_idx ON public.tokenprices USING btree (height);
+CREATE INDEX tokenprices_time_idx ON public.tokenprices USING btree ("time" DESC);
 
 SELECT create_hypertable('TokenPrices', 'time', 'asset', 2);
 
-CREATE index on TokenPrices(height);
 
 -- Add TokenVolume to track daily traded volumes
-DROP TABLE TokenVolumes;
+DROP TABLE IF EXISTS TokenVolumes;
 
 CREATE TABLE TokenVolumes (
 	"time" timestamptz NOT NULL,
@@ -87,6 +83,11 @@ as $$
 		  and p.height not in (select distinct height from TokenVolumes);
 $$;
 
+-- public.events_audit definition
+
+-- Drop table
+
+-- DROP TABLE public.events_audit;
 -- public.events_audit definition
 
 -- Drop table
@@ -196,12 +197,43 @@ CREATE TABLE public.events_audit (
 	ds_amount numeric NULL,
 	ds_gaswanted numeric NULL,
 	ds_gasused numeric NULL,
-	CONSTRAINT events_audit_pk PRIMARY KEY (id,"time","type"),
-	CONSTRAINT events_audit_un UNIQUE ("type","time",hash)
+	dt_receiver varchar NULL,
+	dt_sender varchar NULL,
+	dt_denom varchar NULL,
+	dt_amount numeric NULL,
+	dt_success bool NULL,
+	dt_packet_src_port varchar NULL,
+	dt_packet_src_channel varchar NULL,
+	dt_packet_dst_port varchar NULL,
+	dt_packet_dst_channel varchar NULL,
+	dt_packet_channel_ordering varchar NULL,
+	dt_packet_connection varchar NULL,
+	dt_packet_timeout_timestamp numeric NULL,
+	dt_packet_timeout_height varchar NULL,
+	dt_packet_sequence varchar NULL,
+	description varchar NULL,
+	uc_client_id varchar NULL,
+	uc_client_type varchar NULL,
+	uc_consensus_height varchar NULL,
+	uc_header varchar NULL,
+	uc_module varchar NULL,
+	ap_success varchar NULL,
+	ap_module varchar NULL,
+	ul_address varchar NULL,
+	ul_unit numeric NULL,
+	ul_pool varchar NULL,
+	CONSTRAINT events_audit_pk PRIMARY KEY (id, "time", type),
+	CONSTRAINT events_audit_un UNIQUE (type, "time", hash)
 );
-CREATE INDEX events_audit_time_idx ON public.events_audit ("time" DESC);
-CREATE INDEX events_audit_type_time_idx ON public.events_audit ("type","time" DESC);
+CREATE INDEX events_audit_al_provider_idx ON public.events_audit USING btree (al_provider, al_pool);
+CREATE INDEX events_audit_height_idx ON public.events_audit USING btree (height);
+CREATE INDEX events_audit_rl_provider_idx ON public.events_audit USING btree (rl_provider, rl_pool);
+CREATE INDEX events_audit_swap_begin_token_idx ON public.events_audit USING btree (swap_begin_token, swap_final_token);
+CREATE INDEX events_audit_swap_final_token_idx ON public.events_audit USING btree (swap_final_token, swap_begin_token);
+CREATE INDEX events_audit_time_idx ON public.events_audit USING btree ("time" DESC);
+CREATE INDEX events_audit_type_time_idx ON public.events_audit USING btree (type, "time" DESC);
 
+-- Table Triggers
 -- public.events_audit_txn definition
 
 -- Drop table
@@ -229,16 +261,30 @@ CREATE INDEX events_audit_txn_height_time_idx ON public.events_audit_txn (height
 CREATE INDEX events_audit_txn_time_idx ON public.events_audit_txn ("time" DESC);
 
 
-CREATE TABLE public.snapshots_vs_claims (
-	created_at timestamp NULL DEFAULT now(),
-	snapshot_data json NULL,
-	id serial NOT NULL,
-	CONSTRAINT snapshots_new_vs_pkey PRIMARY KEY (id)
-);
+-- public.tokenprices_staging definition
 
-CREATE TABLE public.snapshots_lm_claims (
-	created_at timestamp NULL DEFAULT now(),
-	snapshot_data json NULL,
-	id serial NOT NULL,
-	CONSTRAINT snapshots_new_lm_pkey PRIMARY KEY (id)
+-- Drop table
+
+DROP TABLE if exists tokenprices_staging;
+
+CREATE TABLE tokenprices_staging (
+	"time" timestamptz NULL,
+	asset_price float8 NULL,
+	asset varchar(15) NULL,
+	height int8 NULL,
+	is_interpolated bool NULL,
+	reward_distributed float8 NULL
+);
+-- public.prices_latest definition
+
+-- Drop table
+
+DROP TABLE if exists public.prices_latest;
+
+CREATE TABLE public.prices_latest (
+	height int4 NOT NULL,
+	"timestamp" timestamptz NOT NULL,
+	rowan_cusdt numeric NULL,
+	token_prices json NULL,
+	token_volumes_24hr json NULL
 );
