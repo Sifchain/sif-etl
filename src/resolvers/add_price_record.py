@@ -13,11 +13,9 @@ def add_price_record_resolver():
     current_time = datetime.now(timezone.utc)
 
     try:
-        (token_prices_dict, rowan_cusdt, height,
-         timestamp) = get_price_records_sifapi()
+        (token_prices_dict, rowan_cusdt, height, timestamp) = get_price_records_sifapi()
         token_volumes_dict = get_token_volumes_query()
-        create_price_record_mutation(height, timestamp, rowan_cusdt,
-                                     token_prices_dict, token_volumes_dict)
+        create_price_record_mutation(height, timestamp, rowan_cusdt, token_prices_dict, token_volumes_dict)
     except Exception as e:
         errormsg = str(e)
         if errormsg.endswith("closed"):
