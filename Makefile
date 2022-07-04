@@ -49,7 +49,8 @@ help:
 
 .PHONY: up
 up:
-	docker-compose up -d 
+	@docker-compose build tokenregistry	
+	@docker-compose up -d 
 	@make logs
 
 .PHONY: bash
