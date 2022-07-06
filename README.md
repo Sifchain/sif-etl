@@ -1,16 +1,67 @@
-# Sif ETL
+# Data Services Startup Kit
+
+## Sif ETL
 
 Deploy your own ETL server that extracts, transforms and loads sifchain data for analytics and application developments using your own database and `sif-api` instance.
 
 ## Getting Started
 
-1. To build and full stack from local docker-compose environment:
-   `make up`
+First clone the ETL repo.
 
-2. To bring everything down:
+```bash
+git clone https://github.com/sifchain/sif-etl.git
+```
+
+Then clone the API repo
+
+```bash
+git clone https://github.com/sifchain/sif-api.git
+```
+
+## Setup the Prebuilt Docker Stack
+
+ETL stack uses port 5490 (for TimescaleDB) and API stack uses port 8080 (for Web UI) so make sure there's no other services using those ports before starting the installation process.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker compose](https://docs.docker.com/compose/install/)
+
+  Verify that both are installed with the latest version:
+
+  ```bash
+  docker --version && docker-compose --version
+  ```
+
+  - docker version should be greater than 20.10.14
+  - docker-compose version should be greater than 1.29.2
+  - Some linux users may need to prepend commands with `sudo` depending on the [permissions](https://linuxfoundation.org/blog/classic-sysadmin-configuring-the-linux-sudoers-file) of docker executable.
+  - Additional notes...
+
+### Build Step
+
+1. To build ETL full stack from local docker-compose environment. This will take few minutes depending on internet connection for initial run:
+
+   ```bash
+   cd sif-etl
+   make up
+   ```
+
+2. To bring everything down and cleanup:
+
    `make down`
 
-## Structure
+3. After Step #1, bring up the API services on separate terminal:
+
+   ```bash
+   cd ../sif-api
+   npm install
+   npm run dev
+   ```
+
+4. Additional notes or updates.
+
+## ETL Repo Code Structure
 
 This repository is shaped as follows:
 
