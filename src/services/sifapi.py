@@ -8,6 +8,7 @@ from src.utils.setup_logger import setup_logger_util
 
 LCD_SERVER_URL = config_service.api_config["LCD_SERVER_URL"]
 LCD_SERVER_PMTP = config_service.api_config["LCD_SERVER_PMTP"]
+LCD_SERVER_PMTP_HIST = config_service.api_config["LCD_SERVER_PMTP_HIST"]
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
@@ -92,7 +93,7 @@ def get_price_records_sifapi():
     return token_prices_dict, rowan_cusdt, height, timestamp
 
 
-def get_price_records_pmtp_sifapi():
+def get_price_records_pmtp_sifapi(height: int = None):
     token_registry = get_token_decimal_dictionary_db_query()
     token_decimals_dictionary = {}
     for token in token_registry:
@@ -101,9 +102,12 @@ def get_price_records_pmtp_sifapi():
             token["symbol"],
         )
 
-    json_data = requests.get(f"{LCD_SERVER_PMTP}/clp/getPools").json()
-    height = json_data["height"]
+    if height is None:
+        json_data = requests.get(f"{LCD_SERVER_PMTP}/clp/getPools").json()
+    else:
+        json_data = requests.get(f"{LCD_SERVER_PMTP_HIST}/clp/getPools??height={height}").json()
 
+    height = json_data["height"]
     pools = json_data["result"]["pools"]
 
     timestamp = get_timestamp_from_height_pmtp_sifapi(height)
