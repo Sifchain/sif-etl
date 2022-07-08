@@ -107,46 +107,50 @@ def get_price_records_pmtp_sifapi(height: int = None):
     else:
         json_data = requests.get(f"{LCD_SERVER_PMTP_HIST}/clp/getPools??height={height}").json()
 
-    height = json_data["height"]
-    pools = json_data["result"]["pools"]
-
-    timestamp = get_timestamp_from_height_pmtp_sifapi(height)
     rowan_cusdt = None
 
-    # Get the conversion rate for rowan/cusdt
-    for pool in pools:
-        if pool["external_asset"]["symbol"] == "cusdt":
-            # rowan as 18 decimals
-            rowan_cusdt = float(pool["swap_price_native"])
-            break
+    if height == int(json_data["height"]):
+        height = json_data["height"]
+        pools = json_data["result"]["pools"]
 
-    if rowan_cusdt is None:
-        raise Exception(f"Rowan is not initialized: {rowan_cusdt} at {height}")
+        timestamp = get_timestamp_from_height_pmtp_sifapi(height)
 
-    token_prices_dict = {"rowan_cusdt": rowan_cusdt}
+        # Get the conversion rate for rowan/cusdt
+        for pool in pools:
+            if pool["external_asset"]["symbol"] == "cusdt":
+                # rowan as 18 decimals
+                rowan_cusdt = float(pool["swap_price_native"])
+                break
 
-    for pool in pools:
-        # total rowans in this pool divided by rowan decimals
+        if rowan_cusdt is None:
+            raise Exception(f"Rowan is not initialized: {rowan_cusdt} at {height}")
 
-        try:
-            external_asset_symbol = pool["external_asset"]["symbol"].lower()
+        token_prices_dict = {"rowan_cusdt": rowan_cusdt}
 
-            # total tokens in this pool divided by its decimals
-            external_asset_symbol = token_decimals_dictionary[external_asset_symbol][1]
+        for pool in pools:
+            # total rowans in this pool divided by rowan decimals
 
-            token_prices_dict[external_asset_symbol + "_rowan"] = float(
-                pool["swap_price_native"]
-            )
-            token_prices_dict[external_asset_symbol + "_reward_distributed"] = float(
-                pool["reward_period_native_distributed"]
-            )
-            token_prices_dict[external_asset_symbol + "_cusdt"] = (
-                    float(pool["swap_price_external"]) * rowan_cusdt
-            )
-        except Exception as e:
-            logger.info(f"couldn't resolve {e}")
+            try:
+                external_asset_symbol = pool["external_asset"]["symbol"].lower()
 
-    return token_prices_dict, rowan_cusdt, height, timestamp
+                # total tokens in this pool divided by its decimals
+                external_asset_symbol = token_decimals_dictionary[external_asset_symbol][1]
+
+                token_prices_dict[external_asset_symbol + "_rowan"] = float(
+                    pool["swap_price_native"]
+                )
+                token_prices_dict[external_asset_symbol + "_reward_distributed"] = float(
+                    pool["reward_period_native_distributed"]
+                )
+                token_prices_dict[external_asset_symbol + "_cusdt"] = (
+                        float(pool["swap_price_external"]) * rowan_cusdt
+                )
+            except Exception as e:
+                logger.info(f"couldn't resolve {e}")
+
+        return token_prices_dict, rowan_cusdt, height, timestamp
+    else:
+        return [], None, height, None
 
 
 def get_timestamp_from_height_sifapi(height=1):
