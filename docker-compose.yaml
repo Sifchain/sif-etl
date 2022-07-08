@@ -17,6 +17,8 @@ services:
   tokenregistry:
     build:
       context: .
+
+      dockerfile: Dockerfile
     env_file:
       - docker.env
     depends_on: 
@@ -43,6 +45,7 @@ services:
   events_audit:
     image: sif-etl_tokenregistry
     depends_on: 
+      - tokenregistry
       - pricing 
     env_file:
       - docker.env
