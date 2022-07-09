@@ -1,4 +1,5 @@
 import datetime
+import os
 import sys
 import zipfile
 
@@ -42,8 +43,9 @@ if __name__ == "__main__":
         start_export_date = datetime.date(2021, 4, 1)
         end_export_date = datetime.date(2021, 4, 1)
 
-        with zipfile.ZipFile("/media/sf_shared/hello.zip", mode="w") as archive:
-            archive.write("/media/sf_shared/sifchain-pem.csv")
+        # os.chdir(os.path.dirname(output_path))
+        # with zipfile.ZipFile("/media/sf_shared/hello.zip", mode="w") as archive:
+        #     archive.write("sifchain-pem.csv")
 
         delta = datetime.timedelta(days=7)
         while start_export_date < end_export_date:
@@ -55,5 +57,3 @@ if __name__ == "__main__":
             export_events_audit(start_export_date, weekly_end_date, output_path)
             start_export_date = weekly_end_date
 
-# start_export_date = datetime.date(2022, 5, 8)
-# export_table_to_csv(start_export_date, "/db/scripts", "events_audit")
