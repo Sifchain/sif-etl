@@ -12,19 +12,18 @@ class DatabaseService:
 
     def get_conn(self):
         self.connection = psycopg2.connect(
-            database=config_service.pg_config['database'],
-            user=config_service.pg_config['user'],
-            password=config_service.pg_config['password'],
-            host=config_service.pg_config['host'],
-            port=config_service.pg_config['port']
+            database=config_service.pg_config["database"],
+            user=config_service.pg_config["user"],
+            password=config_service.pg_config["password"],
+            host=config_service.pg_config["host"],
+            port=config_service.pg_config["port"],
         )
         return self.connection
 
     def get_dict_cursor(self):
         self.connection = self.get_conn()
         self.connection.autocommit = True
-        return self.connection.cursor(
-            cursor_factory=psycopg2.extras.DictCursor)
+        return self.connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def get_cursor(self):
         self.connection = self.get_conn()

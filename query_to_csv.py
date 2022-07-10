@@ -12,12 +12,19 @@ formatter = logging.Formatter("%(message)s")
 logger = setup_logger_util("query_to_csv.py", formatter)
 
 
-def export_events_audit(_start_date: datetime.date, _end_date: datetime.date, _output_path: str) -> str:
+def export_events_audit(
+    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "events_audit")
 
 
-def query_to_csv(_start_date: datetime.date, _end_date: datetime.date, _output_path: str, table: str,
-                 time_column: str = "time") -> str:
+def query_to_csv(
+    _start_date: datetime.date,
+    _end_date: datetime.date,
+    _output_path: str,
+    table: str,
+    time_column: str = "time",
+) -> str:
     file_name = f"/{table}_{_start_date}.csv"
     path = _output_path + file_name
     sql_str = f"""
@@ -30,10 +37,10 @@ def query_to_csv(_start_date: datetime.date, _end_date: datetime.date, _output_p
     db_cursor = conn.cursor()
     output = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(sql_str)
     try:
-        with open(path, 'w') as f_output:
+        with open(path, "w") as f_output:
             db_cursor.copy_expert(output, f_output)
-    except psycopg2.Error as e:
-        print(e)
+    except psycopg2.Error as err:
+        print(err)
     db_cursor.close()
     conn.close()
     return path
@@ -62,10 +69,16 @@ if __name__ == "__main__":
             try:
                 weekly_end_date = start_export_date + delta
                 if weekly_end_date.month != start_export_date.month:
-                    weekly_end_date = datetime.date(weekly_end_date.year, weekly_end_date.month, 1)
+                    weekly_end_date = datetime.date(
+                        weekly_end_date.year, weekly_end_date.month, 1
+                    )
                 # data included in output file doesn't cross two month
-                logger.info(f"Exporting data range from {start_export_date} to {weekly_end_date}")
-                events_audit_output = export_events_audit(start_export_date, weekly_end_date, output_path)
+                logger.info(
+                    f"Exporting data range from {start_export_date} to {weekly_end_date}"
+                )
+                events_audit_output = export_events_audit(
+                    start_export_date, weekly_end_date, output_path
+                )
                 logger.info("Exporting completed successfully")
                 zip_csv(events_audit_output)
                 start_export_date = weekly_end_date
