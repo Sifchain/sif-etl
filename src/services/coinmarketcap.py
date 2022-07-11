@@ -10,8 +10,7 @@ class CoinMarketCapService:
     def __init__(self) -> None:
         self.logger = setup_logger_util("coinmarketcap.py")
 
-        self.cmcParameters = {"symbol": "",
-                              "convert": "USD", "skip_invalid": "true"}
+        self.cmcParameters = {"symbol": "", "convert": "USD", "skip_invalid": "true"}
 
         self.cmcHeaders = {
             "Accepts": "application/json",
@@ -59,8 +58,12 @@ class CoinMarketCapService:
 
     def get_cmc_price_v2(self) -> dict:
         url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
-        cmcParameters = {"convert": "USD", "start": 1,
-                         "limit": 1000, "volume_24h_min": 1}
+        cmcParameters = {
+            "convert": "USD",
+            "start": 1,
+            "limit": 1000,
+            "volume_24h_min": 1,
+        }
         cmc = self.request_json(url, self.cmcHeaders, cmcParameters)
 
         return cmc

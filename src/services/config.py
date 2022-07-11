@@ -41,6 +41,7 @@ class ConfigService:
             "RPC_SERVER_URL": os.getenv("RPC_SERVER_URL"),
             "LCD_SERVER_URL": os.getenv("LCD_SERVER_URL"),
             "LCD_SERVER_PMTP": os.getenv("LCD_SERVER_PMTP"),
+            "LCD_SERVER_PMTP_HIST": os.getenv("LCD_SERVER_PMTP_HIST", ""),
             "TOKEN_LIST_URL": os.getenv("TOKEN_LIST_URL", ""),
             "TOKEN_LIST": os.getenv("TOKEN_LIST", ""),
             "COINMARKETCAP_URL": os.getenv("COINMARKETCAP_URL", ""),

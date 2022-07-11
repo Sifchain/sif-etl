@@ -1,5 +1,6 @@
 import logging
 
+from src.queries.get_token_price_usd import get_token_price_usd_query
 from src.services.database import database_service
 from src.utils.setup_logger import setup_logger_util
 
@@ -31,7 +32,7 @@ def get_token_volumes_query():
     for swap in swap_query_result:
         token_swap_dict[swap["swap_token_in"]] += swap["swap_token_in_amount"]
         token_swap_dict[swap["swap_token_out"]
-                        ] += swap["swap_token_out_amount"]
+        ] += swap["swap_token_out_amount"]
 
     token_volumes_dict = {}
 

@@ -1,3 +1,118 @@
+-- public.pmtp_pool_info definition
+
+-- Drop table
+
+-- DROP TABLE public.pmtp_pool_info;
+
+CREATE TABLE public.pmtp_pool_info (
+	height int4 NULL,
+	pool varchar NULL,
+	native_asset_balance numeric NULL,
+	external_asset_balance numeric NULL,
+	asset_balance_in_usd numeric NULL,
+	native_asset_bal_usd numeric NULL,
+	external_asset_bal_usd numeric NULL,
+	external_price_usd numeric NULL,
+	native_price_usd numeric NULL,
+	pool_units numeric NULL
+);
+
+-- public.pmtp_pool definition
+
+-- Drop table
+
+-- DROP TABLE public.pmtp_pool;
+
+CREATE TABLE public.pmtp_pool (
+	height int4 NULL,
+	pool varchar NULL,
+	native_asset_balance numeric NULL,
+	external_asset_balance numeric NULL,
+	asset_balance_in_usd numeric NULL,
+	native_asset_bal_usd numeric NULL,
+	external_asset_bal_usd numeric NULL,
+	external_price_usd numeric NULL,
+	native_price_usd numeric NULL,
+	"timestamp" timestamptz NOT NULL DEFAULT now(),
+	pool_units numeric NULL
+);
+CREATE INDEX pmtp_pool_height_idx ON public.pmtp_pool USING btree (height);
+CREATE INDEX pmtp_pool_pool_idx ON public.pmtp_pool USING btree (pool);
+CREATE INDEX pmtp_pool_timestamp_idx ON public.pmtp_pool USING btree ("timestamp" DESC);
+
+-- Table Triggers
+
+create trigger ts_insert_blocker before
+insert
+    on
+    public.pmtp_pool for each row execute function _timescaledb_internal.insert_blocker();
+
+CREATE TABLE public.pool_info (
+	height int4 NULL,
+	pool varchar NULL,
+	native_asset_balance numeric NULL,
+	external_asset_balance numeric NULL,
+	asset_balance_in_usd numeric NULL,
+	native_asset_bal_usd numeric NULL,
+	external_asset_bal_usd numeric NULL,
+	external_price_usd numeric NULL,
+	native_price_usd numeric NULL
+);
+CREATE INDEX pool_info_pool_idx ON public.pool_info USING btree (pool);
+
+-- public.tokenprices_coinmarketcap definition
+
+-- Drop table
+
+-- DROP TABLE public.tokenprices_coinmarketcap;
+
+CREATE TABLE public.tokenprices_coinmarketcap (
+	id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	"timestamp" timestamptz(0) NOT NULL,
+	"token" varchar NOT NULL,
+	circulating_supply numeric NULL,
+	total_supply numeric NULL,
+	last_updated timestamptz(0) NULL,
+	last_price numeric NULL,
+	volume_24h numeric NULL,
+	market_cap numeric NULL,
+	percent_change_1h float4 NULL,
+	percent_change_24h float4 NULL,
+	percent_change_7d float4 NULL,
+	percent_change_30d float4 NULL,
+	percent_change_60d float4 NULL,
+	percent_change_90d float4 NULL,
+	cmc_rank int4 NULL,
+	is_latest bool NOT NULL DEFAULT true,
+	CONSTRAINT tokenprices_coinmarketcap_un UNIQUE ("timestamp", token)
+);
+CREATE INDEX tokenprices_coinmarketcap_is_latest_idx ON public.tokenprices_coinmarketcap USING btree (is_latest);
+CREATE INDEX tokenprices_coinmarketcap_timestamp_idx ON public.tokenprices_coinmarketcap USING btree ("timestamp" DESC);
+CREATE INDEX tokenprices_coinmarketcap_token_timestamp_idx ON public.tokenprices_coinmarketcap USING btree (token, "timestamp" DESC);
+
+-- Table Triggers
+
+create trigger ts_insert_blocker before
+insert
+    on
+    public.tokenprices_coinmarketcap for each row execute function _timescaledb_internal.insert_blocker();
+
+
+-- public.tokenprices_staging definition
+
+-- Drop table
+
+-- DROP TABLE public.tokenprices_staging;
+
+CREATE TABLE public.tokenprices_staging (
+	"time" timestamptz NULL,
+	asset_price float8 NULL,
+	asset varchar(15) NULL,
+	height int8 NULL,
+	is_interpolated bool NULL,
+	reward_distributed float8 NULL
+);
+
 CREATE TABLE POOLS (
 	created_at TIMESTAMP DEFAULT NOW(),
 	pool_data json,

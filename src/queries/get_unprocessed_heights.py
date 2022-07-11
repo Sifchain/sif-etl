@@ -7,6 +7,23 @@ formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_unprocessed_heights_query", formatter)
 
 
+def get_unprocessed_tokenprices_heights_query(latest_height):
+    sql_str = """
+        SELECT
+          generate_series FROM GENERATE_SERIES
+          (
+            (2556371), ({0})
+          ) 
+        WHERE
+          NOT EXISTS(SELECT height FROM tokenprices WHERE height = generate_series )
+          order by generate_series
+    """.format(latest_height)
+    logger.info(sql_str)
+    database_service.cursor.execute(sql_str)
+    records = [r[0] for r in database_service.cursor.fetchall()]
+    return records
+
+
 def get_unprocessed_heights_query(latest_height, start_height=None, event_type=None):
 
     if start_height is None:
