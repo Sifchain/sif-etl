@@ -3,9 +3,10 @@ import logging
 import os
 import sys
 import zipfile
-import psycopg2
-from src.services.database import database_service
 
+import psycopg2
+
+from src.services.database import database_service
 from src.utils.setup_logger import setup_logger_util
 
 formatter = logging.Formatter("%(message)s")
@@ -16,6 +17,26 @@ def export_events_audit(
     _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "events_audit")
+
+
+def export_token_volumes(_output_path: str) -> str:
+    _start_date = datetime.date(2021, 1, 1)
+    _end_date = datetime.date.today()
+    return query_to_csv(_start_date, _end_date, _output_path, "tokenvolumes")
+
+
+def export_token_prices(_output_path: str) -> str:
+    _start_date = datetime.date(2021, 1, 1)
+    _end_date = datetime.date.today()
+    return query_to_csv(_start_date, _end_date, _output_path, "tokenprices")
+
+
+def export_token_registry(_output_path: str) -> str:
+    _start_date = datetime.date(2021, 1, 1)
+    _end_date = datetime.date.today()
+    return query_to_csv(
+        _start_date, _end_date, _output_path, "token_registry", "modified"
+    )
 
 
 def query_to_csv(
@@ -49,39 +70,92 @@ def query_to_csv(
 def zip_csv(file_path: str) -> None:
     if os.path.exists(file_path) or file_path is None:
         head, tail = os.path.split(file_path)
-        with zipfile.ZipFile(file_path.replace(".csv", ".zip"), mode="w") as archive:
+        with zipfile.ZipFile(
+            file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
+        ) as archive:
             archive.write(file_path, tail)
         os.remove(file_path)
     else:
         logger.info(f"File {file_path} doesn't exists.")
 
 
+def export_history(_output_path: str):
+    start_export_date = datetime.date(2021, 2, 8)
+    end_export_date = datetime.date(2022, 7, 1)
+    # tokenregistry
+    token_registry_export = export_token_registry(_output_path)
+    zip_csv(token_registry_export)
+    # event_audit
+    delta = datetime.timedelta(days=7)
+    while start_export_date < end_export_date:
+        try:
+            weekly_end_date = start_export_date + delta
+            if weekly_end_date.month != start_export_date.month:
+                weekly_end_date = datetime.date(
+                    weekly_end_date.year, weekly_end_date.month, 1
+                )
+            # data included in output file doesn't cross two month
+            logger.info(
+                f"Exporting data range from {start_export_date} to {weekly_end_date}"
+            )
+            # event audit
+            events_audit_output = export_events_audit(
+                start_export_date, weekly_end_date, _output_path
+            )
+            zip_csv(events_audit_output)
+
+            # token_prices
+            token_prices_export = export_token_prices(
+                start_export_date, weekly_end_date, _output_path
+            )
+            zip_csv(token_prices_export)
+
+            # token_
+            token_volumes_export = export_token_volumes(
+                start_export_date, weekly_end_date, _output_path
+            )
+            zip_csv(token_volumes_export)
+
+            start_export_date = weekly_end_date
+        except Exception as e:
+            logger.info(f"processing error: {e}")
+            continue
+    logger.info("Exporting completed successfully")
+
+
+def weekly_tables_export(_output_path: str):
+    start_export_date = datetime.date.today()
+    delta = datetime.timedelta(days=7)
+    weekly_end_date = start_export_date - delta
+
+    # event audit table
+    events_audit_output = export_events_audit(
+        start_export_date, weekly_end_date, output_path
+    )
+    zip_csv(events_audit_output)
+
+    # token_prices
+    token_prices_export = export_token_prices(_output_path)
+    zip_csv(token_prices_export)
+
+    # token_volumes
+    token_volumes_export = export_token_volumes(_output_path)
+    zip_csv(token_volumes_export)
+
+    # token registry table
+    token_registry_export = export_token_registry(_output_path)
+    zip_csv(token_registry_export)
+
+
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
-        print("please provide a output path.")
-    else:
-        output_path = sys.argv[1]
-        start_export_date = datetime.date(2021, 6, 1)
-        end_export_date = datetime.date(2021, 9, 1)
-
-        delta = datetime.timedelta(days=7)
-        while start_export_date < end_export_date:
-            try:
-                weekly_end_date = start_export_date + delta
-                if weekly_end_date.month != start_export_date.month:
-                    weekly_end_date = datetime.date(
-                        weekly_end_date.year, weekly_end_date.month, 1
-                    )
-                # data included in output file doesn't cross two month
-                logger.info(
-                    f"Exporting data range from {start_export_date} to {weekly_end_date}"
-                )
-                events_audit_output = export_events_audit(
-                    start_export_date, weekly_end_date, output_path
-                )
-                logger.info("Exporting completed successfully")
-                zip_csv(events_audit_output)
-                start_export_date = weekly_end_date
-            except Exception as e:
-                logger.info(f"processing error: {e}")
-                continue
+        print("No command has been passed")
+    elif len(sys.argv) <= 2:
+        print("No output path has been passed")
+    elif sys.argv[1] == "weekly":
+        output_path = sys.argv[2]
+        weekly_tables_export(output_path)
+        # weekly output or history output
+    elif sys.argv[1] == "history":
+        output_path = sys.argv[2]
+        export_history(output_path)
