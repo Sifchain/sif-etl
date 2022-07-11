@@ -68,7 +68,7 @@ def query_to_csv(
 
 
 def zip_csv(file_path: str) -> None:
-    if os.path.exists(file_path) or file_path is None:
+    if os.path.exists(file_path) and file_path:
         head, tail = os.path.split(file_path)
         with zipfile.ZipFile(
             file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
@@ -82,9 +82,19 @@ def zip_csv(file_path: str) -> None:
 def export_history(_output_path: str):
     start_export_date = datetime.date(2021, 2, 8)
     end_export_date = datetime.date(2022, 7, 1)
+
     # tokenregistry
     token_registry_export = export_token_registry(_output_path)
     zip_csv(token_registry_export)
+
+    # token_prices
+    token_prices_export = export_token_prices(_output_path)
+    zip_csv(token_prices_export)
+
+    # token_volumes
+    token_volumes_export = export_token_volumes(_output_path)
+    zip_csv(token_volumes_export)
+
     # event_audit
     delta = datetime.timedelta(days=7)
     while start_export_date < end_export_date:
@@ -103,48 +113,41 @@ def export_history(_output_path: str):
                 start_export_date, weekly_end_date, _output_path
             )
             zip_csv(events_audit_output)
-
-            # token_prices
-            token_prices_export = export_token_prices(
-                start_export_date, weekly_end_date, _output_path
-            )
-            zip_csv(token_prices_export)
-
-            # token_
-            token_volumes_export = export_token_volumes(
-                start_export_date, weekly_end_date, _output_path
-            )
-            zip_csv(token_volumes_export)
+            logger.info("Exporting completed successfully")
 
             start_export_date = weekly_end_date
         except Exception as e:
             logger.info(f"processing error: {e}")
             continue
-    logger.info("Exporting completed successfully")
 
 
 def weekly_tables_export(_output_path: str):
     start_export_date = datetime.date.today()
     delta = datetime.timedelta(days=7)
     weekly_end_date = start_export_date - delta
+    logger.info(f"Exporting data range from {start_export_date} to {weekly_end_date}")
+    try:
+        # event audit table
+        events_audit_output = export_events_audit(
+            start_export_date, weekly_end_date, output_path
+        )
+        zip_csv(events_audit_output)
 
-    # event audit table
-    events_audit_output = export_events_audit(
-        start_export_date, weekly_end_date, output_path
-    )
-    zip_csv(events_audit_output)
+        # token_prices
+        token_prices_export = export_token_prices(_output_path)
+        zip_csv(token_prices_export)
 
-    # token_prices
-    token_prices_export = export_token_prices(_output_path)
-    zip_csv(token_prices_export)
+        # token_volumes
+        token_volumes_export = export_token_volumes(_output_path)
+        zip_csv(token_volumes_export)
 
-    # token_volumes
-    token_volumes_export = export_token_volumes(_output_path)
-    zip_csv(token_volumes_export)
+        # token registry table
+        token_registry_export = export_token_registry(_output_path)
+        zip_csv(token_registry_export)
 
-    # token registry table
-    token_registry_export = export_token_registry(_output_path)
-    zip_csv(token_registry_export)
+        logger.info("Exporting completed successfully")
+    except Exception as e:
+        logger.info(f"processing error: {e}")
 
 
 if __name__ == "__main__":
