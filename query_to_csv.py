@@ -151,6 +151,9 @@ def weekly_tables_export(_output_path: str):
 
 
 if __name__ == "__main__":
+    # weekly output or history output
+    # example 1: python query_to_csv.py weekly /root
+    # example 2: python query_to_csv.py history /root
     if len(sys.argv) <= 1:
         print("No command has been passed")
     elif len(sys.argv) <= 2:
@@ -158,7 +161,7 @@ if __name__ == "__main__":
     elif sys.argv[1] == "weekly":
         output_path = sys.argv[2]
         weekly_tables_export(output_path)
-        # weekly output or history output
+
     elif sys.argv[1] == "history":
         output_path = sys.argv[2]
         export_history(output_path)
