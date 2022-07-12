@@ -122,9 +122,9 @@ def export_history(_output_path: str):
 
 
 def weekly_tables_export(_output_path: str):
-    start_export_date = datetime.date.today()
     delta = datetime.timedelta(days=7)
-    weekly_end_date = start_export_date - delta
+    weekly_end_date = datetime.date.today()
+    start_export_date = weekly_end_date - delta
     logger.info(f"Exporting data range from {start_export_date} to {weekly_end_date}")
     try:
         # event audit table
