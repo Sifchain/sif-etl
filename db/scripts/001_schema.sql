@@ -403,3 +403,43 @@ CREATE TABLE public.prices_latest (
 	token_prices json NULL,
 	token_volumes_24hr json NULL
 );
+
+-- public.trade_daily_temp definition
+
+-- Drop table
+
+DROP TABLE if exists public.trade_daily_temp;
+
+CREATE TABLE public.trade_daily_temp (
+	trading_pairs varchar(15) NULL,
+	highest_price_24h float8 NULL,
+	lowest_price_24h float8 NULL,
+	last_price float8 NULL,
+	opening float8 NULL,
+	price_change_percent_24h float8 NULL,
+	base_currency text NULL,
+	target_currency text NULL,
+	base_volume numeric NULL,
+	target_volume numeric NULL,
+	bid float8 NULL,
+	ask float8 NULL,
+	liquidity_in_usd numeric NULL
+);
+-- public.pmtp_pool_info definition
+
+-- Drop table
+
+DROP TABLE if exists public.pmtp_pool_info;
+
+CREATE TABLE public.pmtp_pool_info (
+	height int4 NULL,
+	pool varchar NULL,
+	native_asset_balance numeric NULL,
+	external_asset_balance numeric NULL,
+	asset_balance_in_usd numeric NULL,
+	native_asset_bal_usd numeric NULL,
+	external_asset_bal_usd numeric NULL,
+	external_price_usd numeric NULL,
+	native_price_usd numeric NULL,
+	pool_units numeric NULL
+);

@@ -2,7 +2,7 @@
 
 ## Sif ETL
 
-Deploy your own ETL server that extracts, transforms and loads sifchain data for analytics and application developments using your own database and `sif-api` instance.
+Deploy your own ETL server that extracts, transforms and loads sifchain data for analytics and application developments using your own database and `sif-apis` instance.
 
 ## Getting Started
 
@@ -15,7 +15,7 @@ git clone https://github.com/sifchain/sif-etl.git
 Then clone the API repo
 
 ```bash
-git clone https://github.com/sifchain/sif-api.git
+git clone https://github.com/sifchain/sif-apis.git
 ```
 
 ## Setup the Prebuilt Docker Stack
@@ -54,7 +54,7 @@ ETL stack uses port 5490 (for TimescaleDB) and API stack uses port 8080 (for Web
 3. After Step #1, bring up the API services on separate terminal:
 
    ```bash
-   cd ../sif-api
+   cd ../sif-apis
    npm install
    npm run dev
    ```
