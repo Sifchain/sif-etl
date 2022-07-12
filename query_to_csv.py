@@ -14,16 +14,20 @@ logger = setup_logger_util("query_to_csv.py", formatter)
 
 
 def export_events_audit(
-        _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "events_audit")
 
 
-def export_token_volumes(_start_date: datetime.date, _end_date: datetime.date, _output_path: str) -> str:
+def export_token_volumes(
+    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenvolumes")
 
 
-def export_token_prices(_start_date: datetime.date, _end_date: datetime.date, _output_path: str) -> str:
+def export_token_prices(
+    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenprices")
 
 
@@ -36,11 +40,11 @@ def export_token_registry(_output_path: str) -> str:
 
 
 def query_to_csv(
-        _start_date: datetime.date,
-        _end_date: datetime.date,
-        _output_path: str,
-        table: str,
-        time_column: str = "time",
+    _start_date: datetime.date,
+    _end_date: datetime.date,
+    _output_path: str,
+    table: str,
+    time_column: str = "time",
 ) -> str:
     file_name = f"/{table}_{_start_date}.csv"
     path = _output_path + file_name
@@ -67,7 +71,7 @@ def zip_csv(file_path: str) -> None:
     if os.path.exists(file_path) and file_path:
         head, tail = os.path.split(file_path)
         with zipfile.ZipFile(
-                file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
+            file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
         ) as archive:
             archive.write(file_path, tail)
         os.remove(file_path)
@@ -75,7 +79,7 @@ def zip_csv(file_path: str) -> None:
         logger.info(f"File {file_path} doesn't exists.")
 
 
-def historical_tables_export(_output_path: str)->None:
+def historical_tables_export(_output_path: str) -> None:
     start_export_date = datetime.date(2021, 2, 8)
     end_export_date = datetime.date(2022, 7, 1)
 
@@ -89,16 +93,18 @@ def historical_tables_export(_output_path: str)->None:
         try:
             _end_date = start_export_date + delta_month
             if _end_date.month != start_export_date.month:
-                _end_date = datetime.date(
-                    _end_date.year, _end_date.month, 1
-                )
+                _end_date = datetime.date(_end_date.year, _end_date.month, 1)
 
             # token_prices
-            token_prices_export = export_token_prices(start_export_date, _end_date, _output_path)
+            token_prices_export = export_token_prices(
+                start_export_date, _end_date, _output_path
+            )
             zip_csv(token_prices_export)
 
             # token_volumes
-            token_volumes_export = export_token_volumes(start_export_date, _end_date, _output_path)
+            token_volumes_export = export_token_volumes(
+                start_export_date, _end_date, _output_path
+            )
             zip_csv(token_volumes_export)
 
             start_export_date = _end_date
@@ -132,7 +138,7 @@ def historical_tables_export(_output_path: str)->None:
             continue
 
 
-def latest_tables_export(_output_path: str)->None:
+def latest_tables_export(_output_path: str) -> None:
     delta = datetime.timedelta(days=7)
     latest_end_date = datetime.date.today()
     start_export_date = latest_end_date - delta
@@ -147,10 +153,14 @@ def latest_tables_export(_output_path: str)->None:
         # export month data for token_prices & token_volumes
         _start_date = datetime.date(latest_end_date.year, latest_end_date.month, 1)
         # token_prices
-        token_prices_export = export_token_prices(_start_date, latest_end_date, _output_path)
+        token_prices_export = export_token_prices(
+            _start_date, latest_end_date, _output_path
+        )
         zip_csv(token_prices_export)
         # token_volumes
-        token_volumes_export = export_token_volumes(_start_date, latest_end_date, _output_path)
+        token_volumes_export = export_token_volumes(
+            _start_date, latest_end_date, _output_path
+        )
         zip_csv(token_volumes_export)
 
         # token registry table
