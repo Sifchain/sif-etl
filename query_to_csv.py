@@ -14,20 +14,16 @@ logger = setup_logger_util("query_to_csv.py", formatter)
 
 
 def export_events_audit(
-    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+        _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "events_audit")
 
 
-def export_token_volumes(_output_path: str) -> str:
-    _start_date = datetime.date(2021, 1, 1)
-    _end_date = datetime.date.today()
+def export_token_volumes(_start_date: datetime.date, _end_date: datetime.date, _output_path: str) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenvolumes")
 
 
-def export_token_prices(_output_path: str) -> str:
-    _start_date = datetime.date(2021, 1, 1)
-    _end_date = datetime.date.today()
+def export_token_prices(_start_date: datetime.date, _end_date: datetime.date, _output_path: str) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenprices")
 
 
@@ -40,11 +36,11 @@ def export_token_registry(_output_path: str) -> str:
 
 
 def query_to_csv(
-    _start_date: datetime.date,
-    _end_date: datetime.date,
-    _output_path: str,
-    table: str,
-    time_column: str = "time",
+        _start_date: datetime.date,
+        _end_date: datetime.date,
+        _output_path: str,
+        table: str,
+        time_column: str = "time",
 ) -> str:
     file_name = f"/{table}_{_start_date}.csv"
     path = _output_path + file_name
@@ -71,7 +67,7 @@ def zip_csv(file_path: str) -> None:
     if os.path.exists(file_path) and file_path:
         head, tail = os.path.split(file_path)
         with zipfile.ZipFile(
-            file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
+                file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
         ) as archive:
             archive.write(file_path, tail)
         os.remove(file_path)
@@ -79,21 +75,36 @@ def zip_csv(file_path: str) -> None:
         logger.info(f"File {file_path} doesn't exists.")
 
 
-def export_history(_output_path: str):
+def historical_tables_export(_output_path: str):
     start_export_date = datetime.date(2021, 2, 8)
     end_export_date = datetime.date(2022, 7, 1)
 
-    # tokenregistry
+    # token registry
     token_registry_export = export_token_registry(_output_path)
     zip_csv(token_registry_export)
 
-    # token_prices
-    token_prices_export = export_token_prices(_output_path)
-    zip_csv(token_prices_export)
+    # token_prices & token_volumes monthly export
+    delta_month = datetime.timedelta(days=31)
+    while start_export_date < end_export_date:
+        try:
+            _end_date = start_export_date + delta_month
+            if _end_date.month != start_export_date.month:
+                _end_date = datetime.date(
+                    _end_date.year, _end_date.month, 1
+                )
 
-    # token_volumes
-    token_volumes_export = export_token_volumes(_output_path)
-    zip_csv(token_volumes_export)
+            # token_prices
+            token_prices_export = export_token_prices(start_export_date, _end_date, _output_path)
+            zip_csv(token_prices_export)
+
+            # token_volumes
+            token_volumes_export = export_token_volumes(start_export_date, _end_date, _output_path)
+            zip_csv(token_volumes_export)
+
+            start_export_date = _end_date
+        except Exception as e:
+            logger.info(f"processing error: {e}")
+            continue
 
     # event_audit
     delta = datetime.timedelta(days=7)
@@ -121,24 +132,25 @@ def export_history(_output_path: str):
             continue
 
 
-def weekly_tables_export(_output_path: str):
+def latest_tables_export(_output_path: str):
     delta = datetime.timedelta(days=7)
-    weekly_end_date = datetime.date.today()
-    start_export_date = weekly_end_date - delta
-    logger.info(f"Exporting data range from {start_export_date} to {weekly_end_date}")
+    latest_end_date = datetime.date.today()
+    start_export_date = latest_end_date - delta
+    logger.info(f"Exporting data range from {start_export_date} to {latest_end_date}")
     try:
         # event audit table
         events_audit_output = export_events_audit(
-            start_export_date, weekly_end_date, output_path
+            start_export_date, latest_end_date, output_path
         )
         zip_csv(events_audit_output)
 
+        # export month data for token_prices & token_volumes
+        _start_date = datetime.date(latest_end_date.year, latest_end_date.month, 1)
         # token_prices
-        token_prices_export = export_token_prices(_output_path)
+        token_prices_export = export_token_prices(_start_date, latest_end_date, _output_path)
         zip_csv(token_prices_export)
-
         # token_volumes
-        token_volumes_export = export_token_volumes(_output_path)
+        token_volumes_export = export_token_volumes(_start_date, latest_end_date, _output_path)
         zip_csv(token_volumes_export)
 
         # token registry table
@@ -151,17 +163,17 @@ def weekly_tables_export(_output_path: str):
 
 
 if __name__ == "__main__":
-    # weekly output or history output
-    # example 1: python query_to_csv.py weekly /root
-    # example 2: python query_to_csv.py history /root
+    # latest or historical output
+    # example 1: python query_to_csv.py latest /root
+    # example 2: python query_to_csv.py historical /root
     if len(sys.argv) <= 1:
         print("No command has been passed")
     elif len(sys.argv) <= 2:
         print("No output path has been passed")
-    elif sys.argv[1] == "weekly":
+    elif sys.argv[1] == "latest":
         output_path = sys.argv[2]
-        weekly_tables_export(output_path)
+        latest_tables_export(output_path)
 
-    elif sys.argv[1] == "history":
+    elif sys.argv[1] == "historical":
         output_path = sys.argv[2]
-        export_history(output_path)
+        historical_tables_export(output_path)
