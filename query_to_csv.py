@@ -75,7 +75,7 @@ def zip_csv(file_path: str) -> None:
         logger.info(f"File {file_path} doesn't exists.")
 
 
-def historical_tables_export(_output_path: str):
+def historical_tables_export(_output_path: str)->None:
     start_export_date = datetime.date(2021, 2, 8)
     end_export_date = datetime.date(2022, 7, 1)
 
@@ -132,7 +132,7 @@ def historical_tables_export(_output_path: str):
             continue
 
 
-def latest_tables_export(_output_path: str):
+def latest_tables_export(_output_path: str)->None:
     delta = datetime.timedelta(days=7)
     latest_end_date = datetime.date.today()
     start_export_date = latest_end_date - delta
