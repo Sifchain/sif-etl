@@ -12,7 +12,7 @@ def get_unprocessed_tokenprices_heights_query(latest_height):
         SELECT
           generate_series FROM GENERATE_SERIES
           (
-            (2556371), ({0})
+            (6539609), ({0})
           ) 
         WHERE
           NOT EXISTS(SELECT height FROM tokenprices WHERE height = generate_series )

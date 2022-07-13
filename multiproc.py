@@ -104,10 +104,10 @@ def _process_prices_historical():
     un_process_block_heights = get_unprocessed_tokenprices_heights_query(last_event)
     # num_threads = int(last_event // num_events_per_thread) + 1
     num_threads = 50
-    num_events_per_thread = int(7661848 - 2556371) // num_threads + 1
+    num_events_per_thread = int(7661848 - 6539609) // num_threads + 1
     _process_events(
         num_threads,
-        2556371,
+        6539609,
         num_events_per_thread,
         "prices",
         un_process_block_heights,
