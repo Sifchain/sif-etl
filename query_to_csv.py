@@ -13,20 +13,36 @@ formatter = logging.Formatter("%(message)s")
 logger = setup_logger_util("query_to_csv.py", formatter)
 
 
+def export_from_query(sql_str: str, _output_path: str):
+    file_name = f"/events_audit_{datetime.date.today()}.csv"
+    path = _output_path + file_name
+    conn = database_service.get_conn()
+    db_cursor = conn.cursor()
+    output = "COPY ({0}) TO STDOUT WITH CSV HEADER".format(sql_str)
+    try:
+        with open(path, "w") as f_output:
+            db_cursor.copy_expert(output, f_output)
+    except psycopg2.Error as err:
+        print(err)
+    db_cursor.close()
+    conn.close()
+    return path
+
+
 def export_events_audit(
-    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+        _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "events_audit")
 
 
 def export_token_volumes(
-    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+        _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenvolumes")
 
 
 def export_token_prices(
-    _start_date: datetime.date, _end_date: datetime.date, _output_path: str
+        _start_date: datetime.date, _end_date: datetime.date, _output_path: str
 ) -> str:
     return query_to_csv(_start_date, _end_date, _output_path, "tokenprices")
 
@@ -40,11 +56,11 @@ def export_token_registry(_output_path: str) -> str:
 
 
 def query_to_csv(
-    _start_date: datetime.date,
-    _end_date: datetime.date,
-    _output_path: str,
-    table: str,
-    time_column: str = "time",
+        _start_date: datetime.date,
+        _end_date: datetime.date,
+        _output_path: str,
+        table: str,
+        time_column: str = "time",
 ) -> str:
     file_name = f"/{table}_{_start_date}.csv"
     path = _output_path + file_name
@@ -71,7 +87,7 @@ def zip_csv(file_path: str) -> None:
     if os.path.exists(file_path) and file_path:
         head, tail = os.path.split(file_path)
         with zipfile.ZipFile(
-            file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
+                file_path.replace(".csv", ".zip"), "w", zipfile.ZIP_DEFLATED
         ) as archive:
             archive.write(file_path, tail)
         os.remove(file_path)
@@ -176,6 +192,7 @@ if __name__ == "__main__":
     # latest or historical output
     # example 1: python query_to_csv.py latest /root
     # example 2: python query_to_csv.py historical /root
+    # example 3: python query_to_csv.py query /root
     if len(sys.argv) <= 1:
         print("No command has been passed")
     elif len(sys.argv) <= 2:
@@ -187,3 +204,8 @@ if __name__ == "__main__":
     elif sys.argv[1] == "historical":
         output_path = sys.argv[2]
         historical_tables_export(output_path)
+    elif sys.argv[1] == "query":
+        output_path = sys.argv[2]
+        query = "select * from events_audit where type = 'swap_successful' and time > '2022-03-01'"
+        output_from_query = export_from_query(query, output_path)
+        zip_csv(output_from_query)
