@@ -107,7 +107,7 @@ def _process_prices_historical():
     num_events_per_thread = int(last_event - 6539609) // num_threads + 1
     _process_events(
         num_threads,
-        1,
+        6539609,
         num_events_per_thread,
         "prices",
         un_process_block_heights,

@@ -15,7 +15,7 @@ def get_unprocessed_tokenprices_heights_query(latest_height):
             (6539609), ({0})
           ) 
         WHERE
-          NOT EXISTS(SELECT height FROM tokenprices WHERE height = generate_series )
+          NOT EXISTS(SELECT height FROM tokenprices WHERE height = generate_series and height > 6539609)
           order by generate_series
     """.format(latest_height)
     logger.info(sql_str)
