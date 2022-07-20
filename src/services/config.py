@@ -39,6 +39,7 @@ class ConfigService:
         # betanet api config
         self.api_config = {
             "RPC_SERVER_URL": os.getenv("RPC_SERVER_URL"),
+            "RPC_SERVER_TESTNET_URL": os.getenv("RPC_SERVER_TESTNET_URL"),
             "LCD_SERVER_URL": os.getenv("LCD_SERVER_URL"),
             "LCD_SERVER_PMTP": os.getenv("LCD_SERVER_PMTP"),
             "LCD_SERVER_PMTP_HIST": os.getenv("LCD_SERVER_PMTP_HIST", ""),

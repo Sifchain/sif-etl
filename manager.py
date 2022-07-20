@@ -1,6 +1,6 @@
 import sys
 
-from src.commands.event_record_continuous import event_record_continuous_command
+from src.commands.event_record_continuous import *
 from src.commands.latest_run import latest_run_command
 from src.mutations.add_event_record import add_event_record_mutation
 from src.resolvers.add_cmc_price_continuous import add_cmc_price_continuous_resolver
@@ -35,6 +35,8 @@ if __name__ == "__main__":
         update_once_day_resolver()
     elif sys.argv[1] == "event_record_continuous":
         event_record_continuous_command()
+    elif sys.argv[1] == "event_record_continuous_testnet":
+        event_record_continuous_command(1)
     else:
         # Test out one event dispensation
         # This is claims snapshot

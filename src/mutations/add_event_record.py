@@ -1,8 +1,5 @@
-import json
-
 from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
-from src.events.process_event_liquidity_related import process_event_add_create_liquidity_event, \
-    process_event_remove_liquidity_event
+from src.events.process_event_liquidity_related import *
 from src.events.process_event_cancel_unlock_liquidity import process_event_cancel_unlock_liquidity_event
 from src.events.process_event_create_claim import process_event_create_claim_event
 from src.events.process_event_create_validator import process_event_create_validator_event
@@ -13,6 +10,7 @@ from src.events.process_event_distribution_started import process_event_distribu
 from src.events.process_event_edit_validator import process_event_edit_validator_event
 from src.events.process_event_ibc_transfer import process_event_ibc_transfer_event
 from src.events.process_event_lock import process_event_lock_event
+from src.events.process_event_lppd import process_event_lppd_distribution
 from src.events.process_event_proposal_deposit import process_event_proposal_deposit_event
 from src.events.process_event_proposal_vote import process_event_proposal_vote_event
 from src.events.process_event_record_burn import process_event_record_burn_event
@@ -31,9 +29,32 @@ from src.utils.create_hash import create_hash_util
 from src.utils.setup_logger import setup_logger_util
 
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
+RPC_SERVER_TESTNET_URL = config_service.api_config["RPC_SERVER_TESTNET_URL"]
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("add_event_record_mutation", formatter)
+
+
+def add_lddp_event_record_mutation(height: int = 1) -> None:
+    try:
+        block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_TESTNET_URL, height)
+        data = requests.get(block_result_url).json()
+        timestamp = get_timestamp_from_height_sifapi(height, 1)
+
+        if data["result"].get("end_block_events", None):
+            for event in data["result"]["end_block_events"]:
+                try:
+                    if event["type"] in ("lppd/distribution", "rewards/distribution"):
+                        event_type = event["type"]
+                        attrs = event["attributes"]
+                        _hash = create_hash_util(json.dumps(attrs), timestamp)
+                        process_event_lppd_distribution(_hash, event_type, attrs, height, timestamp)
+                except Exception as e:
+                    logger.critical(f"Data inserting error at {height} - {e}")
+
+        return
+    except Exception as e:
+        logger.critical(f"Something bad at {height} - {e}")
 
 
 def add_event_record_mutation(height=1):
