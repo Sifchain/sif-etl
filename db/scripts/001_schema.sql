@@ -203,11 +203,6 @@ $$;
 -- Drop table
 
 -- DROP TABLE public.events_audit;
--- public.events_audit definition
-
--- Drop table
-
--- DROP TABLE public.events_audit;
 
 CREATE TABLE public.events_audit (
 	height int8 NULL,
@@ -337,6 +332,9 @@ CREATE TABLE public.events_audit (
 	ul_address varchar NULL,
 	ul_unit numeric NULL,
 	ul_pool varchar NULL,
+	ld_recipient_addr varchar NULL,
+	ld_total_amount numeric NULL,
+	ld_amount jsonb NULL,
 	CONSTRAINT events_audit_pk PRIMARY KEY (id, "time", type),
 	CONSTRAINT events_audit_un UNIQUE (type, "time", hash)
 );
@@ -347,6 +345,13 @@ CREATE INDEX events_audit_swap_begin_token_idx ON public.events_audit USING btre
 CREATE INDEX events_audit_swap_final_token_idx ON public.events_audit USING btree (swap_final_token, swap_begin_token);
 CREATE INDEX events_audit_time_idx ON public.events_audit USING btree ("time" DESC);
 CREATE INDEX events_audit_type_time_idx ON public.events_audit USING btree (type, "time" DESC);
+
+-- Table Triggers
+
+create trigger ts_insert_blocker before
+insert
+    on
+    public.events_audit for each row execute function _timescaledb_internal.insert_blocker();
 
 -- Table Triggers
 -- public.events_audit_txn definition

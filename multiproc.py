@@ -102,13 +102,13 @@ def _process_latest_events():
 def _process_prices_historical():
     last_event = get_latest_processed_tokenprices_height_query()
     un_process_block_heights = get_unprocessed_tokenprices_heights_query(last_event)
-    # Assume 100 events per minute per thread
-    # Gives 8 hours to process everything
-    num_events_per_thread = 100 * 60 * 8
-    num_threads = int(last_event // num_events_per_thread) + 1
+    # num_events_per_thread = 100 * 60 * 24
+    # num_threads = int(last_event // num_events_per_thread) + 1
+    num_threads = 50
+    num_events_per_thread = int(last_event - 6539609) // num_threads + 1
     _process_events(
         num_threads,
-        1,
+        6539609,
         num_events_per_thread,
         "prices",
         un_process_block_heights,

@@ -2,7 +2,7 @@ from src.mutations.create_events import create_event_delegate_mutation
 from src.utils.clean_parse_amount import clean_parse_amount_util
 
 
-def process_event_delegate_event(hash, event_type, events, height, timestamp, tx):
+def process_event_delegate_event(_hash, event_type, events, height, timestamp, tx):
     validator_addr = ''
     sender_addr = ''
     amount = None
@@ -29,5 +29,5 @@ def process_event_delegate_event(hash, event_type, events, height, timestamp, tx
         if obj['key'] == 'sender':
             sender_addr = obj['value']
 
-    create_event_delegate_mutation(hash, event_type, events,  height, timestamp,
+    create_event_delegate_mutation(_hash, event_type, events, height, timestamp,
                                    validator_addr, sender_addr, amount, gasWanted, gasUsed)

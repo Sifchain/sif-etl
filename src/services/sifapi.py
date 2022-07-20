@@ -12,13 +12,16 @@ LCD_SERVER_URL = config_service.api_config["LCD_SERVER_URL"]
 LCD_SERVER_PMTP = config_service.api_config["LCD_SERVER_PMTP"]
 LCD_SERVER_PMTP_HIST = config_service.api_config["LCD_SERVER_PMTP_HIST"]
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
+RPC_SERVER_TESTNET_URL = config_service.api_config["RPC_SERVER_TESTNET_URL"]
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_price_records_pmtp_sifapi", formatter)
 
 
-def get_latest_block_height_sifapi() -> int:
+def get_latest_block_height_sifapi(testnet: int = None) -> int:
     url = f"{RPC_SERVER_URL}/status"
+    if testnet:
+        url = f"{RPC_SERVER_TESTNET_URL}/status"
     json_data = requests.get(url).json()
     latest_height = int(json_data["result"]["sync_info"]["latest_block_height"])
     return latest_height
@@ -60,9 +63,9 @@ def get_price_records_sifapi():
     for pool in pools:
         if pool["external_asset"]["symbol"] == "cusdt":
             # rowan as 18 decimals
-            rowan_units = float(pool["native_asset_balance"]) / 10**18
+            rowan_units = float(pool["native_asset_balance"]) / 10 ** 18
             # cusdt has 6 decimals
-            cusdt_units = float(pool["external_asset_balance"]) / 10**6
+            cusdt_units = float(pool["external_asset_balance"]) / 10 ** 6
             rowan_cusdt = cusdt_units / rowan_units
             break
 
@@ -73,7 +76,7 @@ def get_price_records_sifapi():
 
     for pool in pools:
         # total rowans in this pool divided by rowan decimals
-        rowan_units = float(pool["native_asset_balance"]) / 10**18
+        rowan_units = float(pool["native_asset_balance"]) / 10 ** 18
 
         external_asset_symbol = pool["external_asset"]["symbol"].lower()
         external_asset_decimals = token_decimals_dictionary[external_asset_symbol][0]
@@ -81,7 +84,7 @@ def get_price_records_sifapi():
 
         # total tokens in this pool divided by its decimals
         external_asset_units = (
-            float(pool["external_asset_balance"]) / 10**external_asset_decimals
+                float(pool["external_asset_balance"]) / 10 ** external_asset_decimals
         )
 
         token_prices_dict[external_asset_symbol + "_rowan"] = float(
@@ -144,7 +147,7 @@ def get_price_records_pmtp_sifapi(height: int = None):
                 pool["reward_period_native_distributed"]
             )
             token_prices_dict[external_asset_symbol + "_cusdt"] = (
-                float(pool["swap_price_external"]) * rowan_cusdt
+                    float(pool["swap_price_external"]) * rowan_cusdt
             )
         except Exception as e:
             logger.info(f"couldn't resolve {e}")
@@ -152,8 +155,10 @@ def get_price_records_pmtp_sifapi(height: int = None):
     return token_prices_dict, rowan_cusdt, height, timestamp
 
 
-def get_timestamp_from_height_sifapi(height=1):
+def get_timestamp_from_height_sifapi(height=1, testnet: int = None):
     block_url = f"{RPC_SERVER_URL}/block?height={height}"
+    if testnet:
+        block_url = f"{RPC_SERVER_TESTNET_URL}/block?height={height}"
     data = requests.get(block_url).json()
     timestamp = data["result"]["block"]["header"]["time"]
     return timestamp

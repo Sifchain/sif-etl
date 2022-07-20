@@ -127,4 +127,4 @@ Here are all the commands that you can run using the command manager:
 
 ## Database
 
-The ETL server uses a timescale postgresql database with the tables defined in the schema file [here](https://github.com/Sifchain/sif-etl/blob/master/db/schema.sql).
+The ETL server uses a timescale postgresql database with the tables defined in the schema file [here](https://github.com/Sifchain/sif-etl/blob/master/db/scripts/001_schema.sql).

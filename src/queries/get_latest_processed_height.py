@@ -8,8 +8,12 @@ def get_latest_processed_tokenprices_height_query():
     return database_service.execute_scalar(sql_str)
 
 
-def get_latest_processed_height_query():
+def get_latest_processed_height_query(testnet: int = None):
     sql_str = """
         select max(height) from events_audit
     """
+    if testnet:
+        sql_str = """
+                select max(height) from events_audit where "type" in('lppd/distribution','rewards/distribution')
+            """
     return database_service.execute_scalar(sql_str)
