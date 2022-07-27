@@ -1,3 +1,5 @@
+import ijson
+
 from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
 from src.events.process_event_liquidity_related import *
 from src.events.process_event_cancel_unlock_liquidity import process_event_cancel_unlock_liquidity_event
@@ -10,7 +12,7 @@ from src.events.process_event_distribution_started import process_event_distribu
 from src.events.process_event_edit_validator import process_event_edit_validator_event
 from src.events.process_event_ibc_transfer import process_event_ibc_transfer_event
 from src.events.process_event_lock import process_event_lock_event
-from src.events.process_event_lppd import process_event_lppd_distribution
+from src.events.process_event_lppd import *
 from src.events.process_event_proposal_deposit import process_event_proposal_deposit_event
 from src.events.process_event_proposal_vote import process_event_proposal_vote_event
 from src.events.process_event_record_burn import process_event_record_burn_event
@@ -35,22 +37,34 @@ formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("add_event_record_mutation", formatter)
 
 
+# --8:28pm
 def add_lddp_event_record_mutation(height: int = 1) -> None:
     try:
+        logger.info(f"processing height {height}")
         block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_TESTNET_URL, height)
-        data = requests.get(block_result_url).json()
         timestamp = get_timestamp_from_height_sifapi(height, 1)
+        from urllib.request import urlopen
 
-        if data["result"].get("end_block_events", None):
-            for event in data["result"]["end_block_events"]:
-                try:
-                    if event["type"] in ("lppd/distribution", "rewards/distribution"):
-                        event_type = event["type"]
-                        attrs = event["attributes"]
-                        _hash = create_hash_util(json.dumps(attrs), timestamp)
-                        process_event_lppd_distribution(_hash, event_type, attrs, height, timestamp)
-                except Exception as e:
-                    logger.critical(f"Data inserting error at {height} - {e}")
+        request = urlopen(block_result_url)
+        events = ijson.items(request, 'result.end_block_events.item')
+        lppd_events = list(filter(lambda x: x["type"] in ("lppd/distribution", "rewards/distribution"), events))
+
+        cnt = len(lppd_events)
+        sql_str = ""
+        for event in lppd_events:
+            try:
+                event_type = event["type"]
+                attrs = event["attributes"]
+                # _hash = create_hash_util(json.dumps(attrs), timestamp)
+                if sql_str:
+                    sql_str += " union all "
+                sql_str += generate_event_lppd_distribution(event_type, attrs, height, timestamp)
+                if cnt % 30 == 0 or cnt == 1:
+                    create_event_lddp_rewards_dist_mutation_in_batch(sql_str)
+                    sql_str = ""
+                cnt -= 1
+            except Exception as e:
+                logger.critical(f"Data inserting error at {height} - {e}")
 
         return
     except Exception as e:

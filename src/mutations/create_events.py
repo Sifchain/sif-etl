@@ -3,11 +3,19 @@ import json
 from src.services.database import database_service
 
 
-def create_event_lddp_rewards_dist_mutation(height, event_type, time, _hash, events_arr, ld_recipient_addr,
+def create_event_lddp_rewards_dist_mutation_in_batch(insert_str: str) -> None:
+    sql_str = f"""
+    insert into events_audit_rewards(height,type,"time", ld_recipient_addr,ld_total_amount,ld_amount)
+    {insert_str}    
+    """
+    database_service.execute_update(sql_str)
+
+
+def create_event_lddp_rewards_dist_mutation(height, event_type, time, ld_recipient_addr,
                                             ld_total_amount, ld_amount) -> None:
     sql_str = f"""
-    insert into events_audit(height,type,"time",hash,log, ld_recipient_addr,ld_total_amount,ld_amount)
-    select {height},'{event_type}',cast('{time}' as timestamp),'{_hash}','{json.dumps(events_arr)}'
+    insert into events_audit_rewards(height,type,"time", ld_recipient_addr,ld_total_amount,ld_amount)
+    select {height},'{event_type}',cast('{time}' as timestamp)
     ,'{ld_recipient_addr}',{ld_total_amount},'{ld_amount}'    
     """
     database_service.execute_update(sql_str)

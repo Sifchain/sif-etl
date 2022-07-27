@@ -14,6 +14,6 @@ def get_latest_processed_height_query(testnet: int = None):
     """
     if testnet:
         sql_str = """
-                select max(height) from events_audit where "type" in('lppd/distribution','rewards/distribution')
+                select max(height) from events_audit_rewards where "type" in('lppd/distribution','rewards/distribution')
             """
     return database_service.execute_scalar(sql_str)

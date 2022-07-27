@@ -15,11 +15,12 @@ def latest_run_command(testnet: int = None):
     # Only process from the latest run.
     try:
         if testnet:
+            # end = 1000000
             end = get_latest_block_height_sifapi(testnet)
             start = get_latest_processed_height_query(testnet)
             event_types = ['lppd/distribution', 'rewards/distribution']
             if start is None:
-                start = 11700
+                start = 900
             unprocessed_heights = get_unprocessed_heights_query_testnet(end, start, event_types)
         else:
             end = get_latest_block_height_sifapi()

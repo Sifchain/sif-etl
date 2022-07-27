@@ -30,11 +30,11 @@ def get_unprocessed_heights_query_testnet(latest_height, start_height=None, even
             SELECT
               generate_series FROM GENERATE_SERIES
               (
-                (select min(height) from events_audit where height > 10000 
+                (select min(height) from events_audit_rewards where height > 0 
                 and "type" in('lppd/distribution','rewards/distribution')), ({0})
               ) 
             WHERE
-              NOT EXISTS(SELECT height FROM events_audit WHERE height = generate_series 
+              NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series 
               and "type" in('lppd/distribution','rewards/distribution'))
               order by generate_series
         """.format(latest_height)
@@ -47,7 +47,7 @@ def get_unprocessed_heights_query_testnet(latest_height, start_height=None, even
                     ({0}), ({1})
                   ) 
                 WHERE
-                  NOT EXISTS(SELECT height FROM events_audit WHERE height = generate_series 
+                  NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series 
                   and "type" in('lppd/distribution','rewards/distribution'))
                   order by generate_series
             """.format(start_height, latest_height)
@@ -60,7 +60,7 @@ def get_unprocessed_heights_query_testnet(latest_height, start_height=None, even
                     ({start_height}), ({latest_height})
                   ) 
                 WHERE
-                  NOT EXISTS(SELECT height FROM events_audit WHERE height = generate_series                  
+                  NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series                  
                   and {event_filter})
                   order by generate_series
             """
