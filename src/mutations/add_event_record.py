@@ -43,9 +43,7 @@ def add_lddp_event_record_mutation(height: int = 1) -> None:
         logger.info(f"processing height {height}")
         block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_TESTNET_URL, height)
         timestamp = get_timestamp_from_height_sifapi(height, 1)
-        from urllib.request import urlopen
-
-        request = urlopen(block_result_url)
+        request = requests.get(block_result_url).text
         events = ijson.items(request, 'result.end_block_events.item')
         lppd_events = list(filter(lambda x: x["type"] in ("lppd/distribution", "rewards/distribution"), events))
 
@@ -59,7 +57,7 @@ def add_lddp_event_record_mutation(height: int = 1) -> None:
                 if sql_str:
                     sql_str += " union all "
                 sql_str += generate_event_lppd_distribution(event_type, attrs, height, timestamp)
-                if cnt % 30 == 0 or cnt == 1:
+                if cnt % 50 == 0 or cnt == 1:
                     create_event_lddp_rewards_dist_mutation_in_batch(sql_str)
                     sql_str = ""
                 cnt -= 1
