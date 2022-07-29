@@ -31,17 +31,16 @@ from src.utils.create_hash import create_hash_util
 from src.utils.setup_logger import setup_logger_util
 
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
-RPC_SERVER_TESTNET_URL = config_service.api_config["RPC_SERVER_TESTNET_URL"]
+RPC_SERVER_LPD_URL = config_service.api_config["RPC_SERVER_LPD_URL"]
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("add_event_record_mutation", formatter)
 
 
-# --8:28pm
 def add_lddp_event_record_mutation(height: int = 1) -> None:
     try:
         logger.info(f"processing height {height}")
-        block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_TESTNET_URL, height)
+        block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_LPD_URL, height)
         timestamp = get_timestamp_from_height_sifapi(height, 1)
         request = requests.get(block_result_url).text
         events = ijson.items(request, 'result.end_block_events.item')

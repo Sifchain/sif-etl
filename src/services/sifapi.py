@@ -12,16 +12,16 @@ LCD_SERVER_URL = config_service.api_config["LCD_SERVER_URL"]
 LCD_SERVER_PMTP = config_service.api_config["LCD_SERVER_PMTP"]
 LCD_SERVER_PMTP_HIST = config_service.api_config["LCD_SERVER_PMTP_HIST"]
 RPC_SERVER_URL = config_service.api_config["RPC_SERVER_URL"]
-RPC_SERVER_TESTNET_URL = config_service.api_config["RPC_SERVER_TESTNET_URL"]
+RPC_SERVER_LPD_URL = config_service.api_config["RPC_SERVER_LPD_URL"]
 
 formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("get_price_records_pmtp_sifapi", formatter)
 
 
-def get_latest_block_height_sifapi(testnet: int = None) -> int:
+def get_latest_block_height_sifapi(is_lpd: int = None) -> int:
     url = f"{RPC_SERVER_URL}/status"
-    if testnet:
-        url = f"{RPC_SERVER_TESTNET_URL}/status"
+    if is_lpd:
+        url = f"{RPC_SERVER_LPD_URL}/status"
     json_data = requests.get(url).json()
     latest_height = int(json_data["result"]["sync_info"]["latest_block_height"])
     return latest_height
@@ -158,7 +158,7 @@ def get_price_records_pmtp_sifapi(height: int = None):
 def get_timestamp_from_height_sifapi(height=1, testnet: int = None):
     block_url = f"{RPC_SERVER_URL}/block?height={height}"
     if testnet:
-        block_url = f"{RPC_SERVER_TESTNET_URL}/block?height={height}"
+        block_url = f"{RPC_SERVER_LPD_URL}/block?height={height}"
     data = requests.get(block_url).json()
     timestamp = data["result"]["block"]["header"]["time"]
     return timestamp

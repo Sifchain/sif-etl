@@ -24,50 +24,21 @@ def get_unprocessed_tokenprices_heights_query(latest_height):
     return records
 
 
-def get_unprocessed_heights_query_testnet(latest_height, start_height=None, event_types: [] = None):
-    if start_height is None:
-        sql_str = """
-            SELECT
-              generate_series FROM GENERATE_SERIES
-              (
-                (select min(height) from events_audit_rewards where height > 0 
-                and "type" in('lppd/distribution','rewards/distribution')), ({0})
-              ) 
-            WHERE
-              NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series 
-              and "type" in('lppd/distribution','rewards/distribution'))
-              order by generate_series
-        """.format(latest_height)
-    else:
-        if event_types is None:
-            sql_str = """
-            SELECT
-                  generate_series FROM GENERATE_SERIES
-                  (
-                    ({0}), ({1})
-                  ) 
-                WHERE
-                  NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series 
-                  and "type" in('lppd/distribution','rewards/distribution'))
-                  order by generate_series
-            """.format(start_height, latest_height)
-        else:
-            event_filter = " type in ('" + "','".join(event_types) + "')"
-            sql_str = f"""
-            SELECT
-                  generate_series FROM GENERATE_SERIES
-                  (
-                    ({start_height}), ({latest_height})
-                  ) 
-                WHERE
-                  NOT EXISTS(SELECT height FROM events_audit_rewards WHERE height = generate_series                  
-                  and {event_filter})
-                  order by generate_series
-            """
+def get_unprocessed_heights_lpd(start_height, latest_height,):
+    # reload the last one in case it partially downloaded
+    sql_str = f"""
+    delete from events_audit_rewards where height = {start_height};
+    SELECT
+          generate_series FROM GENERATE_SERIES
+          (
+            ({start_height}), ({latest_height})
+          )
+          order by generate_series
+    """
 
     logger.info(sql_str)
-    database_service.cursor.execute(sql_str)
-    records = [r[0] for r in database_service.cursor.fetchall()]
+    cursor.execute(sql_str)
+    records = [r[0] for r in cursor.fetchall()]
     return records
 
 

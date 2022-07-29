@@ -35,7 +35,7 @@ if __name__ == "__main__":
         update_once_day_resolver()
     elif sys.argv[1] == "event_record_continuous":
         event_record_continuous_command()
-    elif sys.argv[1] == "event_record_continuous_testnet":
+    elif sys.argv[1] == "event_record_continuous_lpd":
         event_record_continuous_command(1)
     else:
         # Test out one event dispensation

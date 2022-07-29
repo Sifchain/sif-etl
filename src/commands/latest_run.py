@@ -11,17 +11,16 @@ formatter = logging.Formatter("%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 logger = setup_logger_util("latest_run_command", formatter)
 
 
-def latest_run_command(testnet: int = None):
+def latest_run_command(is_lpd: int = None):
     # Only process from the latest run.
     try:
-        if testnet:
+        if is_lpd:
             # end = 1000000
-            end = get_latest_block_height_sifapi(testnet)
-            start = get_latest_processed_height_query(testnet)
-            event_types = ['lppd/distribution', 'rewards/distribution']
+            end = get_latest_block_height_sifapi(is_lpd)
+            start = get_latest_processed_height_query(is_lpd)
             if start is None:
-                start = 900
-            unprocessed_heights = get_unprocessed_heights_query_testnet(end, start, event_types)
+                start = 1
+            unprocessed_heights = get_unprocessed_heights_lpd(start, end)
         else:
             end = get_latest_block_height_sifapi()
             start = get_latest_processed_height_query()
@@ -35,7 +34,7 @@ def latest_run_command(testnet: int = None):
             i = bisect_left(unprocessed_heights, height)
             if i != len(unprocessed_heights) and unprocessed_heights[i] == height:
                 logger.debug(f"Processing {height}")
-                if testnet:
+                if is_lpd:
                     add_lddp_event_record_mutation(height)
                 else:
                     add_event_record_mutation(height)
