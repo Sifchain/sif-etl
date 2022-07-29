@@ -19,7 +19,7 @@ def latest_run_command(is_lpd: int = None):
             end = get_latest_block_height_sifapi(is_lpd)
             start = get_latest_processed_height_query(is_lpd)
             if start is None:
-                start = 1
+                start = 955
             unprocessed_heights = get_unprocessed_heights_lpd(start, end)
         else:
             end = get_latest_block_height_sifapi()

@@ -42,7 +42,13 @@ def add_lddp_event_record_mutation(height: int = 1) -> None:
         logger.info(f"processing height {height}")
         block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_LPD_URL, height)
         timestamp = get_timestamp_from_height_sifapi(height, 1)
-        request = requests.get(block_result_url).text
+        try:
+            request = requests.get(url=block_result_url, stream=True, timeout=(60, 120)).text
+        except Exception as e:
+            logger.critical(f"try one more time")
+            request = requests.get(block_result_url).text
+
+        # request = requests.get(block_result_url).text
         events = ijson.items(request, 'result.end_block_events.item')
         lppd_events = list(filter(lambda x: x["type"] in ("lppd/distribution", "rewards/distribution"), events))
 

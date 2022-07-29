@@ -37,8 +37,8 @@ def get_unprocessed_heights_lpd(start_height, latest_height,):
     """
 
     logger.info(sql_str)
-    cursor.execute(sql_str)
-    records = [r[0] for r in cursor.fetchall()]
+    database_service.cursor.execute(sql_str)
+    records = [r[0] for r in database_service.cursor.fetchall()]
     return records
 
 
