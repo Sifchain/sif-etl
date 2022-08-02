@@ -28,12 +28,10 @@ def get_unprocessed_heights_lpd(start_height, latest_height,):
     # reload the last one in case it partially downloaded
     sql_str = f"""
     delete from events_audit_rewards where height = {start_height};
-    SELECT
-          generate_series FROM GENERATE_SERIES
-          (
-            ({start_height}), ({latest_height})
-          )
-          order by generate_series
+    select generate_series from GENERATE_SERIES (({start_height}), ({latest_height}))
+    except
+    select height from events_audit_rewards
+    order by generate_series
     """
 
     logger.info(sql_str)

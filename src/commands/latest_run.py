@@ -15,7 +15,6 @@ def latest_run_command(is_lpd: int = None):
     # Only process from the latest run.
     try:
         if is_lpd:
-            # end = 1000000
             end = get_latest_block_height_sifapi(is_lpd)
             start = get_latest_processed_height_query(is_lpd)
             if start is None:

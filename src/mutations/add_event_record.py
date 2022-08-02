@@ -1,3 +1,5 @@
+from time import time
+
 import ijson
 
 from src.events.process_event_acknowledge_packet import process_event_acknowledge_packet_event
@@ -40,6 +42,7 @@ logger = setup_logger_util("add_event_record_mutation", formatter)
 def add_lddp_event_record_mutation(height: int = 1) -> None:
     try:
         logger.info(f"processing height {height}")
+        t0 = time()
         block_result_url = "{0}/block_results?height={1}".format(RPC_SERVER_LPD_URL, height)
         timestamp = get_timestamp_from_height_sifapi(height, 1)
         try:
@@ -68,6 +71,8 @@ def add_lddp_event_record_mutation(height: int = 1) -> None:
                 cnt -= 1
             except Exception as e:
                 logger.critical(f"Data inserting error at {height} - {e}")
+        tf = time()
+        logger.info(f"Finished height {height} in {tf - t0} seconds")
 
         return
     except Exception as e:
